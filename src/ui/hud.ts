@@ -133,7 +133,7 @@ export class Hud {
         break;
       case 'paused':
         this.title.textContent = 'Paused';
-        this.text.textContent = 'The agent is holding altitude.';
+        this.text.textContent = 'Pam is holding altitude.';
         this.keys.textContent = TOUCH ? 'Tap Resume to continue' : 'P or Enter to resume';
         this.actionButton.textContent = 'Resume';
         break;

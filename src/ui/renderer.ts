@@ -3,7 +3,7 @@ import { agentBox, obstacleBoxes, speedAt } from '../game/game';
 import type { GameState, Obstacle } from '../game/types';
 import { Backdrop } from './backdrop';
 import { fitWorld, type WorldFit } from './sizing';
-import { agentSprite, type Face, type Gaze, type Wing } from './sprites';
+import { agentSprite, SPRITE_PX, type Face, type Gaze, type Wing } from './sprites';
 import { CHOMP_MS, FLAP_WING_MS, MILESTONE_FLOAT_MS, SCORE_FLOAT_MS, SHAKE_MS, type VisualState } from './visual';
 
 const COLOURS = {
@@ -228,7 +228,7 @@ export class Renderer {
       if (visual.overAt !== null && !reduced) {
         // Render-only tumble to the ground; the sim is frozen at the collision.
         const t = (now - visual.overAt) / 1000;
-        ay = Math.min(C.GROUND_Y - C.AGENT_H / 2 + C.HITBOX_INSET, agent.y + agent.vy * t + 0.5 * C.GRAVITY * t * t);
+        ay = Math.min(C.GROUND_Y - C.AGENT_H / 2 + C.HITBOX_BOTTOM, agent.y + agent.vy * t + 0.5 * C.GRAVITY * t * t);
       }
     } else {
       if (!state.armed) {
@@ -244,7 +244,7 @@ export class Renderer {
       if (now - visual.scoredAt < CHOMP_MS) face = 'chomp';
       else if (!reduced && state.tick % BLINK_PERIOD < BLINK_TICKS && state.tick > BLINK_TICKS) face = 'blink';
     }
-    const pixel = 2 * f.scale; // sprite pixels are 2 world units
+    const pixel = (C.AGENT_W / SPRITE_PX) * f.scale; // world units per sprite pixel × device px per unit
     const sprite = this.sprite(`agent:${wing}:${face}:${gaze}:${f.backingW}x${f.backingH}`, () =>
       agentSprite({ wing, face, gaze }, pixel),
     );

@@ -122,15 +122,15 @@ describe('flight physics', () => {
   });
 
   it('clamps at the ceiling without ending the run', () => {
-    const s = { ...flying(), agent: { x: C.AGENT_X, y: C.AGENT_H / 2 + 1, vy: C.FLAP_VY } };
+    const s = { ...flying(), agent: { x: C.AGENT_X, y: C.AGENT_H / 2 - C.AGENT_CEIL_INSET + 1, vy: C.FLAP_VY } };
     const next = step(s, mid).state;
     expect(next.status).toBe('running');
-    expect(next.agent.y).toBe(C.AGENT_H / 2);
+    expect(next.agent.y).toBe(C.AGENT_H / 2 - C.AGENT_CEIL_INSET);
     expect(next.agent.vy).toBe(0);
   });
 
   it('ends the run on the ground', () => {
-    const s = { ...flying(), agent: { x: C.AGENT_X, y: C.GROUND_Y - C.AGENT_H / 2 + C.HITBOX_INSET - 1, vy: 300 } };
+    const s = { ...flying(), agent: { x: C.AGENT_X, y: C.GROUND_Y - C.AGENT_H / 2 + C.HITBOX_BOTTOM - 1, vy: 300 } };
     const { state, events } = step(s, mid);
     expect(state.status).toBe('over');
     expect(state.cause).toBe('ground');
@@ -156,7 +156,7 @@ describe('collisions', () => {
   it('the hitbox is inset: a column that only grazes the sprite box is survived', () => {
     const y = 140;
     const spriteTop = y - C.AGENT_H / 2;
-    const hitboxTop = spriteTop + C.HITBOX_INSET;
+    const hitboxTop = spriteTop + C.HITBOX_TOP;
     // Column bottom edge 2 units into the sprite box but above the hitbox.
     const grazing = { ...stack(C.AGENT_X - 10), gapY: 0, gapH: 0 };
     const grazeBottom = spriteTop + 2;
@@ -176,7 +176,7 @@ describe('collisions', () => {
 
   it('exposes the boxes the renderer debug view draws', () => {
     const box = agentBox({ x: 56, y: 140, vy: 0 });
-    expect(box).toEqual({ x0: 48, y0: 132, x1: 64, y1: 148 });
+    expect(box).toEqual({ x0: 45, y0: 134, x1: 63, y1: 146 });
     const [top, bottom] = obstacleBoxes(stack(100, 150, 100));
     expect(top).toEqual({ x0: 100, y0: 0, x1: 140, y1: 100 });
     expect(bottom).toEqual({ x0: 100, y0: 200, x1: 140, y1: C.GROUND_Y });
@@ -265,7 +265,7 @@ describe('stacks', () => {
     }
     expect(C.MIN_GAP_DELTA).toBeLessThan(C.GAP_REACH * C.OB_SPACING_MIN);
     // Even the narrowest gap leaves the agent's hitbox room on both sides.
-    expect(C.GAP_H_FLOOR).toBeGreaterThan(C.AGENT_H - 2 * C.HITBOX_INSET + 24);
+    expect(C.GAP_H_FLOOR).toBeGreaterThan(C.AGENT_H - C.HITBOX_TOP - C.HITBOX_BOTTOM + 24);
     expect(C.GAP_H_MIN + C.GAP_JITTER_MIN).toBeGreaterThanOrEqual(C.GAP_H_FLOOR);
   });
 

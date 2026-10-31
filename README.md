@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/favicon.svg" width="72" height="72" alt="The Claude Glide agent: a small orange pixel bot with two eyes and a pair of wings" />
+  <img src="public/favicon.svg" width="72" height="72" alt="Pam the bird: a yellow 8-bit bird with a ringed eye, an orange cone beak and a round cap" />
 </p>
 
 <h1 align="center">Claude Glide</h1>
@@ -19,7 +19,7 @@
 <table align="center">
   <tr>
     <td align="center" valign="top">
-      <img src="docs/screenshot-desktop.png" width="480" alt="Claude Glide on desktop: the handheld frame with the scoreboard, the orange agent flying between two stacks of chips, and the fan-game footer" />
+      <img src="docs/screenshot-desktop.png" width="480" alt="Claude Glide on desktop: the handheld frame with the scoreboard, Pam the bird flying between two stacks of chips, and the fan-game footer" />
     </td>
     <td align="center" valign="top">
       <img src="docs/screenshot-mobile.png" width="220" alt="Claude Glide on a phone: the portrait screen above a row of pause, help and sound buttons" />

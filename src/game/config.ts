@@ -16,14 +16,24 @@ export const STEP_HZ = 120;
 export const STEP_MS = 1000 / STEP_HZ;
 export const DT = 1 / STEP_HZ;
 
-// Agent (a 12×12 sprite drawn at 2 units per sprite pixel)
-export const AGENT_W = 24;
-export const AGENT_H = 24;
+// Agent: Pam the bird, a 32×32 sprite drawn at 1 unit per sprite pixel (Option B).
+// The art fills rows 8-27 and all 32 columns (tail lobes left, beak right).
+export const AGENT_W = 32;
+export const AGENT_H = 32;
 /** Horizontal centre of the agent; it never moves sideways. */
 export const AGENT_X = 56;
 export const AGENT_START_Y = 140;
-/** Hitbox inset from the sprite box on every side (16×16 hitbox): fair, never surprising. */
-export const HITBOX_INSET = 4;
+/**
+ * Hitbox insets from the sprite box, per side: an 18×12 box over Pam's body
+ * (art columns 5-22, rows 10-21). The beak tip, tail lobes, cap and feet stay
+ * outside it, so grazes with the outline are survived: fair, never surprising.
+ */
+export const HITBOX_LEFT = 5;
+export const HITBOX_RIGHT = 9;
+export const HITBOX_TOP = 10;
+export const HITBOX_BOTTOM = 10;
+/** The ceiling stops the top of the drawn art (row 8 of the box), not the empty box above it. */
+export const AGENT_CEIL_INSET = 8;
 
 // Flight
 export const GRAVITY = 900;

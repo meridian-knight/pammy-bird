@@ -42,13 +42,13 @@ export function gapBounds(gapH: number): { min: number; max: number } {
   return { min: C.GAP_MARGIN + gapH / 2, max: C.GROUND_Y - C.GAP_MARGIN - gapH / 2 };
 }
 
-/** The agent's hitbox: the sprite box inset by HITBOX_INSET on every side. */
+/** The agent's hitbox: the sprite box inset by the HITBOX_* values on each side. */
 export function agentBox(agent: Agent): Box {
   return {
-    x0: agent.x - C.AGENT_W / 2 + C.HITBOX_INSET,
-    y0: agent.y - C.AGENT_H / 2 + C.HITBOX_INSET,
-    x1: agent.x + C.AGENT_W / 2 - C.HITBOX_INSET,
-    y1: agent.y + C.AGENT_H / 2 - C.HITBOX_INSET,
+    x0: agent.x - C.AGENT_W / 2 + C.HITBOX_LEFT,
+    y0: agent.y - C.AGENT_H / 2 + C.HITBOX_TOP,
+    x1: agent.x + C.AGENT_W / 2 - C.HITBOX_RIGHT,
+    y1: agent.y + C.AGENT_H / 2 - C.HITBOX_BOTTOM,
   };
 }
 
@@ -141,8 +141,8 @@ export function step(state: GameState, rng: Rng = defaultRng): StepResult {
   // Agent: semi-implicit Euler, fall speed capped, ceiling clamps without killing.
   let vy = Math.min(C.MAX_FALL_VY, state.agent.vy + C.GRAVITY * C.DT);
   let y = state.agent.y + vy * C.DT;
-  if (y - C.AGENT_H / 2 < 0) {
-    y = C.AGENT_H / 2;
+  if (y - C.AGENT_H / 2 + C.AGENT_CEIL_INSET < 0) {
+    y = C.AGENT_H / 2 - C.AGENT_CEIL_INSET;
     vy = 0;
   }
   const agent: Agent = { x: state.agent.x, y, vy };

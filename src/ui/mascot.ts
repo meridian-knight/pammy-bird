@@ -2,7 +2,7 @@
  * The start-screen mascot: the in-game agent drawn large, with an idle wing
  * beat, blinks, a look-around, and a hop when hovered or tapped.
  */
-import { agentSprite, SPRITE_PX, type Face, type Gaze, type Wing } from './sprites';
+import { agentGridFor, agentSprite, opaqueRows, SPRITE_PX, type Face, type Gaze, type Wing } from './sprites';
 
 const BLINK_MS = 160;
 const HOP_MS = 520;
@@ -11,24 +11,32 @@ const LOOK_EVERY_MS = 5000;
 const LOOK_MS = 900;
 const SPIN_HOVERS = 4;
 const SPIN_WINDOW_MS = 3000;
+/** Hop and hover lift in sprite pixels per step: Pam's pixels are finer than the old 12×12 art. */
+const LIFT_PX = 2;
 
 const SPIN_ORDER: readonly Gaze[] = ['up', 'right', 'down', 'left'];
 
 export type MascotMode = 'idle' | 'over';
 
-/** Draws one static agent into a canvas (used for the header brand mark). */
+/**
+ * Draws one static agent into a canvas (used for the header brand mark),
+ * cropped to the rows the art fills so the 32x32 box's empty rows add no height.
+ */
 export function drawStaticAgent(canvas: HTMLCanvasElement, cssScale: number, face: Face = 'open'): void {
   const dpr = Math.max(1, Math.min(3, Math.round(window.devicePixelRatio || 1)));
   const pixel = cssScale * dpr;
+  const opts = { wing: 0 as Wing, face, gaze: 'centre' as Gaze };
+  const { top, bottom } = opaqueRows(agentGridFor(opts));
+  const rows = bottom - top + 1;
   canvas.width = SPRITE_PX * pixel;
-  canvas.height = SPRITE_PX * pixel;
+  canvas.height = rows * pixel;
   canvas.style.width = `${SPRITE_PX * cssScale}px`;
-  canvas.style.height = `${SPRITE_PX * cssScale}px`;
+  canvas.style.height = `${rows * cssScale}px`;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(agentSprite({ wing: 0, face, gaze: 'centre' }, pixel), 0, 0);
+  ctx.drawImage(agentSprite(opts, pixel), 0, -top * pixel);
 }
 
 export class Mascot {
@@ -74,12 +82,13 @@ export class Mascot {
   }
 
   /**
-   * Sizes the sprite: 6x beside the 24px desktop title; on touch layouts by
-   * the screen's CSS width so narrow screens keep room for the title and Start.
+   * Sizes the 32x32 sprite: 3x (96 CSS px) beside the 24px desktop title; on
+   * touch layouts by the screen's CSS width so narrow screens keep room for the
+   * title and Start. Whole and half scales keep Pam's pixels even at 2x.
    */
   fit(titleFontPx: number, screenPx?: number): void {
-    if (screenPx === undefined) this.scale = titleFontPx >= 22 ? 6 : titleFontPx >= 19 ? 5 : 4;
-    else this.scale = screenPx >= 300 ? 5 : screenPx >= 240 ? 4 : 3;
+    if (screenPx === undefined) this.scale = titleFontPx >= 19 ? 3 : 2;
+    else this.scale = screenPx >= 300 ? 2 : screenPx >= 240 ? 1.5 : 1;
     const dpr = Math.max(1, Math.min(3, Math.round(window.devicePixelRatio || 1)));
     this.pixel = this.scale * dpr;
     this.canvas.width = SPRITE_PX * this.pixel;
@@ -199,7 +208,7 @@ export class Mascot {
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, size, size);
     const h = Math.round(size * squash);
-    ctx.drawImage(sprite, 0, size - h - lift * pixel, size, h);
+    ctx.drawImage(sprite, 0, size - h - lift * LIFT_PX * pixel, size, h);
   }
 
   private sprite(gaze: Gaze, face: Face, wing: Wing): HTMLCanvasElement {

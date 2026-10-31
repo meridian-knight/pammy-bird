@@ -1,11 +1,15 @@
-// Generates favicon.svg, PNG icons, favicon.ico and the 1200x630 social preview
-// from the same 12x12 pixel grid the game draws (src/art/agent-grid.js).
+// Generates the home-screen icons (apple-touch 180, icon-192, icon-512) and the
+// 1200x630 social preview from the same 32x32 Pam grid the game draws
+// (src/art/agent-grid.js). The favicons (favicon.svg, favicon.ico,
+// favicon-16.png, favicon-32.png) are Iris's hand-drawn 16px set, committed in
+// public/ as delivered: this script does not write them, because a 32px sprite
+// downscaled to 16px loses Pam's features.
 // Usage: node scripts/make-assets.mjs <outDir> [previewFileName]
 // Example: npm run assets   (writes into public/, preview as social-preview-v1.png)
 import { chromium } from '@playwright/test';
-import { writeFileSync, mkdirSync, readFileSync, unlinkSync } from 'node:fs';
+import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { agentGrid, PALETTE } from '../src/art/agent-grid.js';
+import { agentGrid, PALETTE, SPRITE_PX } from '../src/art/agent-grid.js';
 
 const out = process.argv[2] ?? 'public';
 const previewName = process.argv[3] ?? 'social-preview-v1.png';
@@ -16,11 +20,12 @@ const rects = (g, ox = 0, oy = 0) =>
 const svgDoc = (w, h, body, bg = '') =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" shape-rendering="crispEdges">${bg}${body}</svg>`;
 
-// --- favicon.svg: the agent, wings down, transparent background
-const icon = svgDoc(12, 12, rects(agentGrid({ wing: 0, gaze: 'centre' })));
-writeFileSync(join(out, 'favicon.svg'), icon);
-// Opaque, rounded variant for Apple / Android home screens.
-const iconOpaque = svgDoc(12, 12, rects(agentGrid({ wing: 0, gaze: 'centre' })), '<rect width="12" height="12" rx="1.5" fill="#241c16"/>');
+// --- Home-screen icon: Pam (art rows 8-27, all 32 columns) centred on a dark
+// rounded tile 36 units square, so the 180px apple-touch icon is an exact 5x.
+const TILE = 36;
+const PAD_X = (TILE - SPRITE_PX) / 2; // 2
+const PAD_Y = (TILE - 20) / 2 - 8; // art rows 8-27 centred vertically
+const iconOpaque = svgDoc(TILE, TILE, rects(agentGrid({ wing: 0, gaze: 'centre' }), PAD_X, PAD_Y), `<rect width="${TILE}" height="${TILE}" rx="4.5" fill="#241c16"/>`);
 
 // --- social preview 1200x630: the agent flying between two stacks of chips
 const SCENE_W = 132; // scene units (1 unit = 8 px)
@@ -58,7 +63,8 @@ const scene =
   stack(106, 9, 22) +
   `<rect x="0" y="${GROUND}" width="${SCENE_W}" height="${SCENE_H - GROUND}" fill="#241c16"/>` +
   `<rect x="0" y="${GROUND}" width="${SCENE_W}" height="1" fill="#9a4f36"/>` +
-  rects(agentGrid({ wing: 1, gaze: 'right' }), 52, 6);
+  // Pam at half a scene unit per art pixel (4 px per art pixel), in the first gap.
+  `<g transform="translate(52 3) scale(0.5)">${rects(agentGrid({ wing: 1, gaze: 'right' }))}</g>`;
 const S = 8;
 const social = `<!doctype html><html><head><meta charset="utf-8"><style>
   body{margin:0;width:1200px;height:630px;overflow:hidden;background:#15110e;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:#efe4d3}
@@ -89,36 +95,9 @@ async function pngFromSvg(svg, size, file, transparent) {
   await page.setContent(`<!doctype html><html><head><style>html,body{margin:0;background:${transparent ? 'transparent' : '#241c16'}}img{display:block;width:${size}px;height:${size}px;image-rendering:pixelated}</style></head><body><img src="data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}"></body></html>`);
   await page.screenshot({ path: join(out, file), omitBackground: transparent, clip: { x: 0, y: 0, width: size, height: size } });
 }
-await pngFromSvg(icon, 16, 'favicon-16.png', true);
-await pngFromSvg(icon, 32, 'favicon-32.png', true);
-await pngFromSvg(icon, 48, 'favicon-48.png', true);
 await pngFromSvg(iconOpaque, 180, 'apple-touch-icon.png', false);
 await pngFromSvg(iconOpaque, 192, 'icon-192.png', false);
 await pngFromSvg(iconOpaque, 512, 'icon-512.png', false);
 await browser.close();
 
-// --- favicon.ico: PNG-in-ICO container with 16/32/48 entries
-const entries = [16, 32, 48].map((s) => ({ s, data: readFileSync(join(out, `favicon-${s}.png`)) }));
-const header = Buffer.alloc(6);
-header.writeUInt16LE(0, 0);
-header.writeUInt16LE(1, 2);
-header.writeUInt16LE(entries.length, 4);
-let offset = 6 + 16 * entries.length;
-const dir = Buffer.concat(
-  entries.map(({ s, data }) => {
-    const b = Buffer.alloc(16);
-    b.writeUInt8(s === 256 ? 0 : s, 0);
-    b.writeUInt8(s === 256 ? 0 : s, 1);
-    b.writeUInt8(0, 2);
-    b.writeUInt8(0, 3);
-    b.writeUInt16LE(1, 4);
-    b.writeUInt16LE(32, 6);
-    b.writeUInt32LE(data.length, 8);
-    b.writeUInt32LE(offset, 12);
-    offset += data.length;
-    return b;
-  }),
-);
-writeFileSync(join(out, 'favicon.ico'), Buffer.concat([header, dir, ...entries.map((e) => e.data)]));
-unlinkSync(join(out, 'favicon-48.png')); // only needed inside the ICO
-console.log('assets written');
+console.log('assets written (favicons left as committed)');

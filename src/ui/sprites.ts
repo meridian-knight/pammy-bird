@@ -1,5 +1,5 @@
 /**
- * Locally drawn pixel art. The agent is a 12x12 grid of palette keys (see
+ * Locally drawn pixel art. The agent (Pam the bird) is a 32x32 grid of palette keys (see
  * src/art/agent-grid.js) painted onto a small canvas at a device-pixel scale
  * (integer or fractional, with rounded pixel edges), so it stays crisp at any
  * screen size without the browser resampling it.
@@ -16,21 +16,36 @@ export interface AgentSpriteOptions {
 }
 
 /**
- * Device-pixel edges of the 12 sprite pixels at `scale` device px per sprite
- * pixel. The scale may be fractional: edges are rounded so the sprite covers
- * exactly `round(12 × scale)` pixels and neighbouring widths differ by at most
- * one, which keeps the art crisp without any later resampling. Integer scales
- * give the plain `i × scale` edges.
+ * Device-pixel edges of `n` sprite pixels (the agent's SPRITE_PX by default)
+ * at `scale` device px per sprite pixel. The scale may be fractional: edges are
+ * rounded so the sprite covers exactly `round(n × scale)` pixels and
+ * neighbouring widths differ by at most one, which keeps the art crisp without
+ * any later resampling. Integer scales give the plain `i × scale` edges.
  */
-export function pixelEdges(scale: number): number[] {
+export function pixelEdges(scale: number, n: number = SPRITE_PX): number[] {
   const edges: number[] = [];
-  for (let i = 0; i <= SPRITE_PX; i++) edges.push(Math.round(i * scale));
+  for (let i = 0; i <= n; i++) edges.push(Math.round(i * scale));
   return edges;
 }
 
+/** First and last rows of `grid` that hold any opaque pixel (whole grid if none). */
+export function opaqueRows(grid: readonly (readonly string[])[]): { top: number; bottom: number } {
+  let top = -1;
+  let bottom = -1;
+  grid.forEach((row, y) => {
+    if (row.some((k) => k !== '.')) {
+      if (top < 0) top = y;
+      bottom = y;
+    }
+  });
+  return top < 0 ? { top: 0, bottom: grid.length - 1 } : { top, bottom };
+}
+
 export function paint(grid: readonly (readonly string[])[], palette: Readonly<Record<string, string>>, scale: number): HTMLCanvasElement {
-  const edges = pixelEdges(scale);
-  const size = edges[SPRITE_PX]!;
+  // Square grids of any size: the 32x32 agent and the 12x12 backdrop token.
+  const n = grid.length;
+  const edges = pixelEdges(scale, n);
+  const size = edges[n]!;
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
@@ -45,6 +60,10 @@ export function paint(grid: readonly (readonly string[])[], palette: Readonly<Re
     });
   });
   return canvas;
+}
+
+export function agentGridFor(opts: AgentSpriteOptions): string[][] {
+  return agentGrid({ wing: opts.wing, face: opts.face, gaze: opts.gaze ?? 'centre' });
 }
 
 /** The flying agent at `scale` device pixels per sprite pixel. */

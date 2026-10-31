@@ -219,7 +219,7 @@ const resize = (): void => {
   renderer.resize(w, h);
   const touchLayout = document.body.dataset.layout === 'touch';
   mascot.fit(parseFloat(getComputedStyle(hud.titleNode).fontSize) || 20, touchLayout ? w : undefined);
-  drawStaticAgent(document.getElementById('hud-mascot') as HTMLCanvasElement, 2);
+  drawStaticAgent(document.getElementById('hud-mascot') as HTMLCanvasElement, 1);
   updateDebugOverlay();
 };
 // Coalesce bursts of layout events (toolbar animations, rotation) into one
