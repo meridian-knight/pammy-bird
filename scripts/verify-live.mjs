@@ -1,7 +1,7 @@
 import { chromium, devices } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 // Read-only live checks (desktop + Pixel 7 emulation). Usage: node scripts/verify-live.mjs [baseUrl]
-const BASE = process.argv[2] ?? 'https://meridian-knight.github.io/claude-glide/';
+const BASE = process.argv[2] ?? 'https://meridian-knight.github.io/pammy-bird/';
 const HOST = new URL(BASE).host;
 const browser = await chromium.launch();
 const results = [];
@@ -46,9 +46,9 @@ async function session(label, ctxOpts, touch) {
     layout: document.body.dataset.layout,
     csp: !!document.querySelector('meta[http-equiv="Content-Security-Policy"]'),
   }));
-  check(`${label}: title credits CyberSquad0`, meta.title === 'Claude Glide | Retro Flappy-Style Arcade Game | CyberSquad0', meta.title);
+  check(`${label}: title credits CyberSquad0`, meta.title === 'Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0', meta.title);
   check(`${label}: description (flight copy, CyberSquad0 credit)`, (meta.desc || '').startsWith('Tap to flap, thread the gaps and beat your best.') && (meta.desc || '').endsWith('Built by CyberSquad0 + Claude.'), meta.desc);
-  check(`${label}: canonical + og:image v1`, meta.canonical === BASE && meta.ogImage === BASE + 'social-preview-v1.png');
+  check(`${label}: canonical + og:image v2`, meta.canonical === BASE && meta.ogImage === BASE + 'social-preview-v2.png');
   check(`${label}: CSP meta present`, meta.csp);
   check(`${label}: start copy`, meta.startText === 'Tap to flap. Thread the gaps. Beat your best.' && meta.rule === 'Avoid the stacks and the ground.');
   check(`${label}: scoreboard says Score and Best only`, /Score/.test(meta.scoreboard) && /Best/.test(meta.scoreboard) && !/Agents/.test(meta.scoreboard));
@@ -57,7 +57,7 @@ async function session(label, ctxOpts, touch) {
   const credit = await page.evaluate(() => { const a = document.querySelector('.foot a.credit-link'); return a ? { href: a.href, rel: a.rel, text: a.innerText } : null; });
   check(`${label}: credit link to cs0.dev`, !!credit && credit.href === 'https://www.cs0.dev/' && /noopener/.test(credit.rel) && credit.text === 'CYBER SQUAD ZERO', JSON.stringify(credit));
   check(`${label}: layout`, meta.layout === (touch ? 'touch' : 'desktop'));
-  for (const p of ['favicon.svg', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'social-preview-v1.png', 'robots.txt']) {
+  for (const p of ['favicon.svg', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'social-preview-v2.png', 'robots.txt']) {
     const r = await page.request.get(BASE + p);
     check(`${label}: ${p}`, r.status() === 200);
   }
@@ -118,7 +118,7 @@ async function session(label, ctxOpts, touch) {
   if (touch) await page.locator('#action-btn').tap(); else await page.keyboard.press('Enter');
   await page.waitForFunction(() => document.body.dataset.status === 'running');
   check(`${label}: restart`, (await state()).score === 0 && (await state()).armed === false);
-  check(`${label}: best stored`, (await page.evaluate(() => localStorage.getItem('claude-glide:best'))) === '1');
+  check(`${label}: best stored`, (await page.evaluate(() => localStorage.getItem('pammy-bird:best'))) === '1');
   await page.locator('#mute-btn').click();
   check(`${label}: mute toggle`, (await page.locator('#mute-btn').getAttribute('aria-pressed')) === 'true');
   check(`${label}: zero console/asset errors`, errors.length === 0, errors.slice(0, 3).join(' | '));

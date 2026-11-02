@@ -1,25 +1,27 @@
-# Claude Glide: project context and handover
+# Pammy Bird: project context and handover
 
-Read this first when resuming development. It records what the game is, the decisions that shaped it, how it is built, tested and deployed, and what is still open. Second game in the CyberSquad0 retro arcade series, after Claude Swarm (Snake). Last updated for release 1.1.1 (2026-10-20).
+Read this first when resuming development. It records what the game is, the decisions that shaped it, how it is built, tested and deployed, and what is still open. Pammy Bird is Claude Glide (the second game in the CyberSquad0 retro arcade series, after Claude Swarm) rebranded around Pam the bird and set in Melbourne; the history below up to 1.1.1 is Claude Glide's. Last updated 2026-11-02 for the Pammy Bird rebrand (local repo, not yet released).
 
 ## What it is
 
-A static browser game in the Flappy Bird style: the player's orange pixel "agent" flies right through gaps in vertical "stacks" of chip blocks; tap, click or Space flaps; one point per stack passed; a stack or the ground ends the run. No backend, no accounts, no AI API, no network traffic after load. "Agent" is the figurative name for the character; it is a canvas sprite.
+A static browser game in the Flappy Bird style: Pam, a yellow 8-bit bird, flies right over Melbourne at dusk through gaps in brick chimney "stacks"; tap, click or Space flaps; one point per stack passed; a stack or the ground ends the run. No backend, no accounts, no AI API, no network traffic after load. In the code the character is still called the "agent" (`agentGrid`, `AGENT_W`); players only ever see "Pam".
 
-- Live: https://meridian-knight.github.io/claude-glide/
-- Repository: https://github.com/meridian-knight/claude-glide (`main` deploys; `develop` is the working branch and is kept fast-forwarded onto `main`)
+- Live: not yet; the planned address is https://meridian-knight.github.io/pammy-bird/ (all metadata already points there).
+- Repository: local only at `~/Pammy Bird Game`, cloned from claude-glide with its history and no remote. A GitHub repository (planned `meridian-knight/pammy-bird`) is created only on the owner's say-so; claude-glide itself is unchanged.
 - Stack: Vite 8, TypeScript 5.9, Vitest, Playwright. No runtime dependencies. Same pinned versions as Claude Swarm.
 - Sibling project: Claude Swarm at `/Users/agentnoz/Claude Swarm Game` (frozen, do not modify). The platform modules here were copied from it; see "Lineage".
 
 ## Brand and copy rules (fixed)
 
 - Tagline: **Tap to flap. Thread the gaps. Beat your best.**
-- Terms: agent (the character, never "bot"), stacks (the obstacles), gap, flap.
+- Terms: Pam (the character, never "bot" or "agent" in copy), stacks (the brick chimney obstacles), gap, flap.
 - Creator: uppercase contexts use **CYBER SQUAD ZERO**; mixed case uses **CyberSquad0**; abbreviation if ever needed **Cs0**; site https://www.cs0.dev.
 - Credits: uppercase **BUILT BY CYBER SQUAD ZERO + CLAUDE**, mixed case **Built by CyberSquad0 + Claude.** The footer is uppercase via CSS, so the uppercase form is written literally there; never place "CyberSquad0" inside an element with `text-transform: uppercase`.
 - Disclaimer (keep): "Not affiliated with or endorsed by Anthropic." plus "Unofficial fan game". README adds "Not affiliated with the makers of Flappy Bird."
-- Page title: "Claude Glide | Retro Flappy-Style Arcade Game | CyberSquad0".
-- Social preview: `public/social-preview-v1.png`. Bump the version number on every artwork change and update all four references in `index.html` (og:image, og:image:secure_url, twitter:image, JSON-LD image) plus the release test and `verify-live.mjs`.
+- Page title: "Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0".
+- Pam: the A4-32 sprite by Iris (32×32, six colours, 40 states) is locked art; never recolour or redraw it here. Her identity cues and palette are recorded in the Image Generation library (Pammy Bird, lock L02).
+- World: 8-bit Melbourne at dusk, one world unit per art pixel (the same grain as Pam); no smooth gradients; nothing near Pam as bright as her yellow.
+- Social preview: `public/social-preview-v2.png`. Bump the version number on every artwork change and update all four references in `index.html` (og:image, og:image:secure_url, twitter:image, JSON-LD image) plus the release test and `verify-live.mjs`.
 - No licence file, by choice (as Claude Swarm).
 
 ## Architecture
@@ -29,15 +31,16 @@ src/game/      pure rules, no DOM: createGame, startGame, restartGame, togglePau
                (one fixed 120 Hz step, no dt parameter), speedAt, gapHeightAt, agentBox,
                obstacleBoxes. config.ts is the ONLY tuning table (world, physics, stacks,
                ramp, lockouts). Injected mulberry32 Rng (?seed=N).
-src/art/       agent-grid.js (+ .d.ts): the 12x12 agent grid shared by sprites.ts and
-               scripts/make-assets.mjs so icons and the preview never drift from the game.
+src/art/       agent-grid.js (+ .d.ts): Pam's 32x32 grid (Iris's A4-32, byte-identical), shared by
+               sprites.ts and scripts/make-assets.mjs so icons and the preview never drift.
+               token-grid.js: the series' 12x12 chip, no longer drawn; kept for its unit test.
 src/ui/        sizing (pure fit of the fixed 240x320 world into a 1:1 whole-pixel canvas),
                renderer (stacks, ground, parallax, agent, "+1", ?debug hitboxes), sprites
                (paint/pixelEdges), visual (event timers, reduced motion), hud (overlays,
                scoreboard, hover hint, restart lockout), help (dialog, focus trap), input
                (keys + flap surface), audio (WebAudio blips, unlock on every gesture),
                haptics (score/over only, Android), layout (chips between HUD and deck),
-               mascot, storage (localStorage best + mute, keys claude-glide:*).
+               mascot, storage (localStorage best + mute, keys pammy-bird:*).
 src/main.ts    wiring, rAF loop with a fixed-step accumulator, pause policy, resize
                coalescing, ?test hook (window.__glide), ?debug readout.
 index.html     markup, metadata, CSP (injected at build by vite.config.ts), JSON-LD.
@@ -55,7 +58,7 @@ tests/e2e      Playwright matrix, 14 projects (desktop, short desktop, five phon
 
 ## Key behaviours and decisions
 
-- **World and scale.** The sim runs in a fixed 240x320-unit world (agent 24 units, ground band from y=296). The canvas is sized by `fitWorld` (src/ui/sizing.ts): backing store = whole device px, CSS box = backing/dpr and a whole number of CSS px (searched within 10%, so the canvas is never resampled, the rule inherited from Claude Swarm 1.2.4/1.2.5), world drawn at one uniform fractional scale and letterboxed inside. Difficulty therefore never depends on the screen. `?debug` shows hitboxes and the sizing readout (`1:1 true`, `uniform true`); `window.__glide.boardMetrics()` under `?test`.
+- **World and scale.** The sim runs in a fixed 240x320-unit world (Pam's box 32 units, 1 unit per art pixel, ground band from y=296). The canvas is sized by `fitWorld` (src/ui/sizing.ts): backing store = whole device px, CSS box = backing/dpr and a whole number of CSS px (searched within 10%, so the canvas is never resampled, the rule inherited from Claude Swarm 1.2.4/1.2.5), world drawn at one uniform fractional scale and letterboxed inside. Difficulty therefore never depends on the screen. `?debug` shows hitboxes and the sizing readout (`1:1 true`, `uniform true`); `window.__glide.boardMetrics()` under `?test`.
 - **Fixed step.** 120 Hz, `dt` clamped to 100 ms, at most 12 steps per frame then the remainder is dropped (slow devices run in slow motion rather than teleporting). No render interpolation. Every resume path (`started`, `resumed`) resets the clock, so a long background gap never becomes a burst of steps.
 - **Hover.** Start lands in `running` with `armed=false`: the agent bobs, nothing moves, a "Tap to flap" prompt shows. The first flap arms the run. So the tap that presses Start never also flaps.
 - **Input.** The whole `.screen` frame is the flap surface on `pointerdown` only (no click/touchstart listeners, so a touch's synthesised mouse events are never heard); taps on the overlay, its button or the help dialog are ignored by a `closest()` guard; a pointer-id set and `e.repeat` + a held-keys set stop duplicates. Keys: Space/ArrowUp/W flap (Space on the start screen starts, into the hover), P pauses, Enter starts/resumes/restarts, Escape belongs to help. Space `keyup` is prevented while the game owns it so a focused chip is not re-activated. Utility chips are plain click handlers outside the frame and blur themselves.
@@ -63,12 +66,12 @@ tests/e2e      Playwright matrix, 14 projects (desktop, short desktop, five phon
 - **Closing overlay.** `.overlay:not(.is-open) { pointer-events: none }`: during the 200 ms fade after Start/Resume the first tap must reach the frame (found by the touch tests).
 - **Pause policy.** `visibilitychange` (hidden), `blur`, `pagehide` and rotation (`orientationchange`, `screen.orientation` change) pause; resuming is always explicit. Window/toolbar resizes only refit. Opening help pauses and closing resumes only if help caused the pause; input is blocked while it is open (Space on the focused Close button closes it, which is standard).
 - **Difficulty.** By score only: speed 96 → 128 units/s (+1.6 per point, cap at 20), gap 100 → 84 units (−0.5 per point, floor at 32) before per-stack jitter; the first stack's gap stays within 40 of the start height. Reachability is a unit test over the config (closed form at both spacing extremes plus a 6000-step autopilot run).
-- **Fair hitbox.** 16x16 inside the 24x24 sprite; strict overlap, so touching edges survive; the ceiling clamps without killing.
+- **Fair hitbox.** 18x12 over Pam's body inside the 32x32 box (art columns 5-22, rows 10-21; beak, tail, cap and feet are outside it); strict overlap, so touching edges survive; the ceiling clamps at the top of the drawn art (row 8) without killing. Was 16x16 inside 24x24 in Claude Glide; the change awaits the owner's playtest.
 - **Audio** unlocks on pointerdown, pointerup, touchend, click and keydown and resumes a suspended context; a silent buffer kick helps older iOS. Flap is a quiet triangle chirp. Mute persists in localStorage.
 - **Haptics:** 15 ms on score, 30/40/60 ms on death, never on flap; only where `navigator.vibrate` exists on a coarse-pointer device (Android). iOS has no vibration API and nothing promises it.
 - **Reduced motion** disables parallax scroll, hover bob, death tumble and shake, the "+1" rise, the prompt blink, overlay transitions and mascot motion.
 - **Zoom disabled (1.0.1 → 1.1.1, at the owner's request).** `touch-action: manipulation` on every element (`*`; it is not inherited), `none` on the play surface, `pan-y` on the overlay; viewport meta `maximum-scale=1, user-scalable=no`; WebKit `gesturestart/change/end` cancelled (pinch). Those were not enough on iPhone Safari during fast two-thumb bursts (Safari's double-tap tolerance is wider than a 40 px guard, and overlapping touches bypassed a "no other finger down" check), so since 1.1.1 **every `touchend` on the page is cancelled** (the FastClick technique, which removes Safari's double-tap zoom and its native click) and `input.ts` synthesises the click itself: `button.click()` for taps on enabled buttons, a dispatched click for other targets (the help backdrop); a touch that moved ≥ 10 px is not a tap; links stay native; `data-pressed` gives the pressed look. `?debug` shows `visualViewport.scale` and the last touch target. The e2e tests cover the burst, the drag, the backdrop and the meta.
-- **Backdrop (1.1.0): a data centre at dusk.** `src/ui/backdrop.ts`: sky gradient whose phase (dusk → night → dawn → day) advances every 10 points with a 1.5 s crossfade and a "10!" float; far rack skyline (seeded layout, scroll ×0.15) whose LEDs glow steadily with only a slow 5 to 9 s brightness drift (hard blinking made the skyline look like it dropped in and out on the owner's phone); dim unpulsed token chips (×0.45) with a slow bob; sparse dust (×0.7); circuit-trace ground (×1). All layers derive from the renderer's scroll distance, so pause and reduced motion freeze them. A browser test checks the upper world stays dark enough for the stacks to read.
+- **Backdrop (Pammy Bird): Melbourne at dusk, 8-bit.** `src/ui/backdrop.ts`: a sky in six stepped bands with a two-row checker dither, whose phase (dusk → night → dawn → day, stars at dusk and night, a crescent moon at night) advances every 10 points with a 1.5 s crossfade and a "10!" float; a fixed Melbourne skyline tile (Rialto, Eureka Tower with its gold crown and red stripe, Flinders Street Station with clock tower and green dome, St Paul's, the Arts Centre spire, CBD blocks; scroll ×0.15) whose window lights only drift slowly in brightness (hard blinking made a skyline look like it dropped in and out on the owner's phone); seeded terrace roofs with chimney smoke (×0.45); faint haze (×0.7); the street with a bluestone kerb, tram rails and a green-and-gold W-class tram that passes about one screen in five (×1, render-only, below the kerb line at y=296). Stacks are red-brick chimneys with a cream capstone at each gap edge (the owner picked them over bluestone pillars on 2 Nov 2026); every 40 × 20 block fills its cell, so the drawn stack is exactly its collision box. All scrolling layers derive from the renderer's scroll distance, so pause and reduced motion freeze them. Unit tests cover the layout builders and dark skies; a browser test checks the upper world stays dark enough for the stacks to read.
 - **Stacks (1.1.0).** Spacing 128 to 184 per stack, gap height jitter −6..+14 over the score ramp with an absolute floor of 78, gap-centre moves between 24 and 0.6 × spacing that flip direction after two moves the same way and reflect off the bounds instead of clamping. Reachability is still a unit test over the config, plus a statistical variety test.
 - **Touch layout:** chips (pause, help, sound) in a row under the screen, never over the play surface; short landscape puts them in a column to the left of the screen. The screen is `aspect-ratio: 3/4`, sized from `--vh - --chrome` with a `--board-min` floor; short screens scroll naturally.
 
@@ -104,6 +107,8 @@ node scripts/audit-help.mjs            # help dialog fit across 6 viewports
 6. Rollback: `git revert` on `main` and push. Never force-push.
 
 ## Release history
+
+Pammy Bird has no release yet. The rows below are Claude Glide's.
 
 | Tag | Content |
 |---|---|

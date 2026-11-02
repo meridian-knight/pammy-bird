@@ -1,5 +1,5 @@
-const BEST_KEY = 'claude-glide:best';
-const MUTED_KEY = 'claude-glide:muted';
+const BEST_KEY = 'pammy-bird:best';
+const MUTED_KEY = 'pammy-bird:muted';
 
 function read(key: string): string | null {
   try {

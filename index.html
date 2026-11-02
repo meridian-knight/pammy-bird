@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#15110e" />
-    <title>Claude Glide | Retro Flappy-Style Arcade Game | CyberSquad0</title>
+    <meta name="theme-color" content="#0e0d18" />
+    <title>Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0</title>
     <meta name="description" content="Tap to flap, thread the gaps and beat your best. A free retro arcade fan game inspired by Flappy Bird, for desktop and mobile. Built by CyberSquad0 + Claude." />
     <meta name="author" content="CyberSquad0" />
-    <meta name="application-name" content="Claude Glide" />
-    <meta name="apple-mobile-web-app-title" content="Claude Glide" />
-    <link rel="canonical" href="https://meridian-knight.github.io/claude-glide/" />
+    <meta name="application-name" content="Pammy Bird" />
+    <meta name="apple-mobile-web-app-title" content="Pammy Bird" />
+    <link rel="canonical" href="https://meridian-knight.github.io/pammy-bird/" />
 
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="./favicon.ico" sizes="16x16 32x32" />
@@ -17,29 +17,29 @@
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Claude Glide" />
+    <meta property="og:site_name" content="Pammy Bird" />
     <meta property="og:locale" content="en_GB" />
-    <meta property="og:url" content="https://meridian-knight.github.io/claude-glide/" />
-    <meta property="og:title" content="Claude Glide | Retro Flappy-Style Arcade Game | CyberSquad0" />
+    <meta property="og:url" content="https://meridian-knight.github.io/pammy-bird/" />
+    <meta property="og:title" content="Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0" />
     <meta property="og:description" content="Tap to flap, thread the gaps and beat your best. A free retro arcade fan game inspired by Flappy Bird, for desktop and mobile. Built by CyberSquad0 + Claude." />
-    <meta property="og:image" content="https://meridian-knight.github.io/claude-glide/social-preview-v1.png" />
-    <meta property="og:image:secure_url" content="https://meridian-knight.github.io/claude-glide/social-preview-v1.png" />
+    <meta property="og:image" content="https://meridian-knight.github.io/pammy-bird/social-preview-v2.png" />
+    <meta property="og:image:secure_url" content="https://meridian-knight.github.io/pammy-bird/social-preview-v2.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Claude Glide: Pam the bird, a yellow 8-bit bird with an orange beak, flying through a gap between two stacks of chips. Tap to flap. Thread the gaps. Beat your best. Unofficial fan game by CyberSquad0 + Claude." />
+    <meta property="og:image:alt" content="Pammy Bird: Pam the bird, a yellow 8-bit bird with an orange beak, flying through a gap between two brick chimney stacks over Melbourne at dusk. Tap to flap. Thread the gaps. Beat your best. Unofficial fan game by CyberSquad0 + Claude." />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Claude Glide | Retro Flappy-Style Arcade Game | CyberSquad0" />
+    <meta name="twitter:title" content="Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0" />
     <meta name="twitter:description" content="Tap to flap, thread the gaps and beat your best. A free retro arcade fan game inspired by Flappy Bird, for desktop and mobile. Built by CyberSquad0 + Claude." />
-    <meta name="twitter:image" content="https://meridian-knight.github.io/claude-glide/social-preview-v1.png" />
-    <meta name="twitter:image:alt" content="Claude Glide: Pam the bird, a yellow 8-bit bird with an orange beak, flying through a gap between two stacks of chips. Tap to flap. Thread the gaps. Beat your best. Unofficial fan game by CyberSquad0 + Claude." />
+    <meta name="twitter:image" content="https://meridian-knight.github.io/pammy-bird/social-preview-v2.png" />
+    <meta name="twitter:image:alt" content="Pammy Bird: Pam the bird, a yellow 8-bit bird with an orange beak, flying through a gap between two brick chimney stacks over Melbourne at dusk. Tap to flap. Thread the gaps. Beat your best. Unofficial fan game by CyberSquad0 + Claude." />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "VideoGame",
-        "name": "Claude Glide",
-        "url": "https://meridian-knight.github.io/claude-glide/",
-        "image": "https://meridian-knight.github.io/claude-glide/social-preview-v1.png",
+        "name": "Pammy Bird",
+        "url": "https://meridian-knight.github.io/pammy-bird/",
+        "image": "https://meridian-knight.github.io/pammy-bird/social-preview-v2.png",
         "description": "Tap to flap, thread the gaps and beat your best. A free retro arcade fan game inspired by Flappy Bird, for desktop and mobile. Built by CyberSquad0 + Claude.",
         "genre": "Arcade",
         "gamePlatform": "Web browser",
@@ -56,7 +56,7 @@
       <header class="hud">
         <div class="brand">
           <canvas id="hud-mascot" class="hud-mascot" width="32" height="20" aria-hidden="true"></canvas>
-          <h1 class="title">Claude Glide</h1>
+          <h1 class="title">Pammy Bird</h1>
         </div>
         <dl class="scoreboard" aria-label="Scoreboard">
           <div class="stat"><dt>Score</dt><dd id="score">0</dd></div>
@@ -77,7 +77,7 @@
           <div class="overlay-inner">
             <canvas id="mascot" class="mascot" width="96" height="96" aria-hidden="true"></canvas>
             <p class="eyebrow" id="overlay-eyebrow">Unofficial fan game</p>
-            <h2 id="overlay-title">Claude Glide</h2>
+            <h2 id="overlay-title">Pammy Bird</h2>
             <p id="overlay-text" class="overlay-text"></p>
             <p id="overlay-keys" class="keys"></p>
             <div id="overlay-controls" class="controls"></div>

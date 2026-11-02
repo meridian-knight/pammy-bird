@@ -25,6 +25,8 @@ declare global {
       setAgent(agent: Partial<Agent>): void;
       /** Test-only: replaces the stacks. */
       setObstacles(obstacles: Obstacle[]): void;
+      /** Test-only: sets the parallax scroll and the sky phase, for repeatable scene captures. */
+      setScene(scene: { scroll?: number; phase?: number }): void;
       boardMetrics(): ReturnType<Renderer['boardMetrics']>;
       lastAgentCss(): Renderer['lastAgentCss'];
       /** The last 64 events in order. */
@@ -346,6 +348,13 @@ if (params.has('test')) {
     setObstacles(obstacles) {
       state = { ...state, obstacles };
       syncHud();
+    },
+    setScene(scene) {
+      if (scene.scroll !== undefined) renderer.setScroll(scene.scroll);
+      if (scene.phase !== undefined) {
+        visual.phase = scene.phase;
+        visual.prevPhase = scene.phase;
+      }
     },
     boardMetrics: () => renderer.boardMetrics(),
     lastAgentCss: () => renderer.lastAgentCss,

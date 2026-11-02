@@ -62,9 +62,9 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('start screen', () => {
   test('start screen shows the series copy, controls and footer', async ({ page }) => {
-    await expect(page).toHaveTitle('Claude Glide | Retro Flappy-Style Arcade Game | CyberSquad0');
+    await expect(page).toHaveTitle('Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0');
     await expect(page.locator('#overlay-eyebrow')).toHaveText('Unofficial fan game');
-    await expect(page.locator('#overlay-title')).toHaveText('Claude Glide');
+    await expect(page.locator('#overlay-title')).toHaveText('Pammy Bird');
     await expect(page.locator('#overlay-text')).toHaveText('Tap to flap. Thread the gaps. Beat your best.');
     await expect(page.locator('#overlay-keys')).toHaveText('Avoid the stacks and the ground.');
     await expect(page.locator('#action-btn')).toHaveText('Start');
@@ -227,7 +227,7 @@ test.describe('keyboard play', () => {
     await expect.poll(async () => (await state(page)).score).toBe(1);
     await expect(page.locator('#score')).toHaveText('1');
     await expect(page.locator('#best')).toHaveText('1');
-    expect(await page.evaluate(() => localStorage.getItem('claude-glide:best'))).toBe('1');
+    expect(await page.evaluate(() => localStorage.getItem('pammy-bird:best'))).toBe('1');
     await page.waitForTimeout(400);
     expect((await state(page)).score).toBe(1);
     const scored = await page.evaluate(() => window.__glide!.events().filter((e) => e === 'scored').length);
@@ -479,7 +479,7 @@ test.describe('mobile readiness', () => {
     await expect(page.locator('#mute-btn')).toHaveAttribute('aria-label', 'Unmute sound');
     await page.reload();
     await expect(page.locator('#mute-btn')).toHaveAttribute('aria-pressed', 'true');
-    expect(await page.evaluate(() => localStorage.getItem('claude-glide:muted'))).toBe('1');
+    expect(await page.evaluate(() => localStorage.getItem('pammy-bird:muted'))).toBe('1');
     await page.locator('#mute-btn').click();
     await expect(page.locator('#mute-btn')).toHaveAttribute('aria-pressed', 'false');
   });
@@ -572,10 +572,10 @@ test.describe('scene', () => {
     }
     samples.sort((a, b) => a - b);
     expect(samples[samples.length >> 1]!).toBeLessThan(48);
-    // The stack's block fill is bright: plain fill inside the lowest block above the gap
-    // (away from the highlight, pins and spark); brightest of a small neighbourhood so a
-    // CSS scanline cannot dim the sample.
-    const [bx, by] = px(126, 100 - 7);
+    // The stack's gap edge is bright: the cream capstone at the bottom of the lowest brick
+    // block above the gap; brightest of a small neighbourhood so a CSS scanline cannot dim
+    // the sample.
+    const [bx, by] = px(126, 100 - 3);
     let brightest = 0;
     for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) brightest = Math.max(brightest, img.lum(bx + dx, by + dy));
     expect(brightest).toBeGreaterThan(170);
@@ -595,7 +595,7 @@ test.describe('release checks', () => {
     const inline = html.match(/<script(?![^>]*src=)[^>]*>/g) ?? [];
     expect(inline).toHaveLength(1);
     expect(inline[0]).toContain('application/ld+json');
-    expect(html.split('social-preview-v1.png')).toHaveLength(5); // og:image, secure_url, twitter:image, JSON-LD
+    expect(html.split('social-preview-v2.png')).toHaveLength(5); // og:image, secure_url, twitter:image, JSON-LD
     const meta = await page.evaluate(() => ({
       description: document.querySelector('meta[name=description]')?.getAttribute('content'),
       canonical: document.querySelector('link[rel=canonical]')?.getAttribute('href'),
@@ -606,15 +606,15 @@ test.describe('release checks', () => {
       ld: JSON.parse(document.querySelector('script[type="application/ld+json"]')!.textContent!) as { '@type': string; author: { name: string; url: string }; name: string },
     }));
     expect(meta.description).toContain('Built by CyberSquad0 + Claude.');
-    expect(meta.canonical).toBe('https://meridian-knight.github.io/claude-glide/');
-    expect(meta.ogTitle).toBe('Claude Glide | Retro Flappy-Style Arcade Game | CyberSquad0');
-    expect(meta.ogImage).toBe('https://meridian-knight.github.io/claude-glide/social-preview-v1.png');
+    expect(meta.canonical).toBe('https://meridian-knight.github.io/pammy-bird/');
+    expect(meta.ogTitle).toBe('Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0');
+    expect(meta.ogImage).toBe('https://meridian-knight.github.io/pammy-bird/social-preview-v2.png');
     expect(meta.twitterCard).toBe('summary_large_image');
-    expect(meta.theme).toBe('#15110e');
+    expect(meta.theme).toBe('#0e0d18');
     expect(meta.ld['@type']).toBe('VideoGame');
-    expect(meta.ld.name).toBe('Claude Glide');
+    expect(meta.ld.name).toBe('Pammy Bird');
     expect(meta.ld.author).toEqual({ '@type': 'Organization', name: 'CyberSquad0', url: 'https://www.cs0.dev' });
-    for (const file of ['favicon.svg', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'social-preview-v1.png', 'robots.txt']) {
+    for (const file of ['favicon.svg', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'social-preview-v2.png', 'robots.txt']) {
       const r = await page.request.get(new URL(file, baseURL!).toString());
       expect(r.status(), file).toBe(200);
     }

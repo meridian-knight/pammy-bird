@@ -17,7 +17,7 @@ const CSP = [
 ].join('; ');
 
 const cspMeta = (): Plugin => ({
-  name: 'claude-glide-csp-meta',
+  name: 'pammy-bird-csp-meta',
   apply: 'build',
   transformIndexHtml(html) {
     return html.replace(

@@ -2,27 +2,27 @@
   <img src="public/favicon.svg" width="72" height="72" alt="Pam the bird: a yellow 8-bit bird with a ringed eye, an orange cone beak and a round cap" />
 </p>
 
-<h1 align="center">Claude Glide</h1>
+<h1 align="center">Pammy Bird</h1>
 
 <p align="center"><strong>Tap to flap. Thread the gaps. Beat your best.</strong></p>
 
-<p align="center">A free retro arcade fan game inspired by Flappy Bird, for desktop and mobile.<br />Built by <a href="https://www.cs0.dev">CyberSquad0</a> + Claude. The second game in the series after <a href="https://meridian-knight.github.io/claude-swarm/">Claude Swarm</a>.</p>
+<p align="center">A free retro arcade fan game inspired by Flappy Bird, for desktop and mobile.<br />Pam the bird flaps over Melbourne at dusk. Built by <a href="https://www.cs0.dev">CyberSquad0</a> + Claude, from Claude Glide, the second game in the series after <a href="https://meridian-knight.github.io/claude-swarm/">Claude Swarm</a>.</p>
 
 <p align="center">
-  <a href="https://meridian-knight.github.io/claude-glide/"><strong>▶ Play now: meridian-knight.github.io/claude-glide</strong></a>
+  <a href="https://meridian-knight.github.io/pammy-bird/"><strong>▶ Play now: meridian-knight.github.io/pammy-bird</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/meridian-knight/claude-glide/actions/workflows/deploy-pages.yml"><img src="https://github.com/meridian-knight/claude-glide/actions/workflows/deploy-pages.yml/badge.svg" alt="Deploy to GitHub Pages workflow status" /></a>
+  <a href="https://github.com/meridian-knight/pammy-bird/actions/workflows/deploy-pages.yml"><img src="https://github.com/meridian-knight/pammy-bird/actions/workflows/deploy-pages.yml/badge.svg" alt="Deploy to GitHub Pages workflow status" /></a>
 </p>
 
 <table align="center">
   <tr>
     <td align="center" valign="top">
-      <img src="docs/screenshot-desktop.png" width="480" alt="Claude Glide on desktop: the handheld frame with the scoreboard, Pam the bird flying between two stacks of chips, and the fan-game footer" />
+      <img src="docs/screenshot-desktop.png" width="480" alt="Pammy Bird on desktop: the handheld frame with the scoreboard, Pam the bird flying between two brick chimney stacks over the Melbourne skyline at dusk, and the fan-game footer" />
     </td>
     <td align="center" valign="top">
-      <img src="docs/screenshot-mobile.png" width="220" alt="Claude Glide on a phone: the portrait screen above a row of pause, help and sound buttons" />
+      <img src="docs/screenshot-mobile.png" width="220" alt="Pammy Bird on a phone: the portrait screen above a row of pause, help and sound buttons" />
     </td>
   </tr>
 </table>
@@ -33,7 +33,7 @@
 2. **Fly through the gap in every stack** to score a point.
 3. **Avoid the stacks and the ground.** One touch ends the run.
 
-Press Start, then the first flap begins the run. The stacks speed up a little and the gaps tighten a little as your score grows, up to a cap, and every stack differs in spacing, gap and height. The sky over the data centre shifts every 10 points. Your best score and the sound setting are remembered in your browser only.
+Press Start, then the first flap begins the run. The stacks speed up a little and the gaps tighten a little as your score grows, up to a cap, and every stack differs in spacing, gap and height. The sky over Melbourne shifts every 10 points, from dusk to night to dawn to day. Your best score and the sound setting are remembered in your browser only.
 
 | | Flap | Pause / Resume | Start / Restart | Help |
 |---|---|---|---|---|
@@ -45,7 +45,7 @@ The page disables browser zoom (double tap and pinch) so fast taps never zoom th
 ## Under the hood
 
 - Static site: Vite + TypeScript, no backend, no accounts, no AI API, no network requests once loaded.
-- “Agent” is the game’s name for its character. It is a canvas sprite drawn from a 12×12 pixel grid, not an AI agent.
+- Pam is an 8-bit canvas sprite drawn from a 32×32 pixel grid. The Melbourne skyline (Eureka Tower, Flinders Street Station, St Paul’s, the Arts Centre spire), the brick chimney stacks and the tram are drawn in code too, in the same 8-bit grain; there are no image files in the game itself.
 - Game rules live in `src/game/` as pure functions on a fixed 120 Hz step in a 240×320-unit world, with their own unit tests; rendering, input, audio and layout live in `src/ui/`. The world is drawn at one uniform scale and letterboxed, so the scene never stretches and the game plays the same on every screen.
 - `?debug` draws the hitboxes and a sizing readout; `?seed=N` makes the stacks reproducible.
 - A Content Security Policy meta tag ships with the production page.
@@ -60,7 +60,7 @@ npm test             # unit tests (Vitest)
 npm run test:e2e     # browser tests (Playwright, desktop + mobile matrix)
 npm run build        # production build in dist/
 npm run preview      # serve dist/ locally
-npm run assets       # regenerate icons and the social preview from the sprite grid
+npm run assets       # regenerate icons and the social preview (run npm run dev or preview first)
 npm run shots        # regenerate the README screenshots (run npm run preview first)
 ```
 
@@ -76,6 +76,6 @@ To roll back, revert the offending commits on `main` and push; Pages keeps servi
 
 ## Credits
 
-Built by **[CyberSquad0](https://www.cs0.dev)** + **Claude**. The game lives at https://meridian-knight.github.io/claude-glide/.
+Built by **[CyberSquad0](https://www.cs0.dev)** + **Claude**. The game lives at https://meridian-knight.github.io/pammy-bird/.
 
 Not affiliated with or endorsed by Anthropic. Not affiliated with the makers of Flappy Bird.

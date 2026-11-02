@@ -1,83 +1,105 @@
 import { describe, expect, it } from 'vitest';
-import { GROUND_Y } from '../../src/game/config';
+import { GROUND_Y, WORLD_W } from '../../src/game/config';
 import {
-  buildSkyline,
-  buildTokens,
-  LED_MAX,
-  LED_MIN,
-  LED_PERIOD_MAX,
-  LED_PERIOD_MIN,
-  ledLevel,
+  buildHaze,
+  buildTerraces,
+  buildWindows,
+  LIGHT_MAX,
+  LIGHT_MIN,
+  LIGHT_PERIOD_MAX,
+  LIGHT_PERIOD_MIN,
+  lightLevel,
+  mixHex,
+  ROOFS_TILE_W,
   SKY_PHASES,
+  skyBands,
   skyPhaseAt,
+  SKYLINE,
   SKYLINE_TILE_W,
-  TOKENS_TILE_W,
+  TRAM_LOOP,
+  TRAM_SPEED,
+  TRAM_W,
+  tramX,
 } from '../../src/ui/backdrop';
 
-describe('buildSkyline', () => {
-  it('is deterministic for a seed and differs between seeds', () => {
-    expect(buildSkyline(7)).toEqual(buildSkyline(7));
-    expect(buildSkyline(7)).not.toEqual(buildSkyline(8));
+describe('Melbourne skyline', () => {
+  it('keeps every landmark inside the tile and out of the play band’s upper half', () => {
+    const kinds = new Set(SKYLINE.map((b) => b.kind));
+    for (const k of ['rialto', 'eureka', 'station', 'stpauls', 'artscentre'] as const) expect(kinds.has(k)).toBe(true);
+    for (const b of SKYLINE) {
+      expect(b.x).toBeGreaterThanOrEqual(0);
+      expect(b.x + b.w).toBeLessThanOrEqual(SKYLINE_TILE_W);
+      expect(GROUND_Y - b.h).toBeGreaterThan(160); // never climbs into the play band's upper half
+    }
   });
 
-  it('places racks inside the tile, standing on the ground, without overlap', () => {
-    const racks = buildSkyline(7);
-    expect(racks.length).toBeGreaterThanOrEqual(6);
-    expect(racks.length).toBeLessThanOrEqual(14);
-    for (let i = 0; i < racks.length; i++) {
-      const r = racks[i]!;
-      expect(r.x).toBeGreaterThanOrEqual(0);
-      expect(r.x + r.w).toBeLessThanOrEqual(SKYLINE_TILE_W);
-      expect(r.w).toBeGreaterThanOrEqual(14);
-      expect(r.w).toBeLessThanOrEqual(28);
-      expect(r.h).toBeGreaterThanOrEqual(36);
-      expect(r.h).toBeLessThanOrEqual(110);
-      expect(GROUND_Y - r.h).toBeGreaterThan(100); // skyline never climbs into the play band's upper half
-      if (i > 0) expect(r.x).toBeGreaterThanOrEqual(racks[i - 1]!.x + racks[i - 1]!.w + 2);
-      expect(r.leds.length).toBeGreaterThanOrEqual(2);
-      expect(r.leds.length).toBeLessThanOrEqual(6);
-      for (const led of r.leds) {
-        expect(led.x).toBeGreaterThanOrEqual(1);
-        expect(led.x + 2).toBeLessThanOrEqual(r.w);
-        expect(led.y).toBeGreaterThanOrEqual(1);
-        expect(led.y + 2).toBeLessThanOrEqual(r.h);
-        expect(led.period).toBeGreaterThanOrEqual(LED_PERIOD_MIN);
-        expect(led.period).toBeLessThanOrEqual(LED_PERIOD_MAX);
-      }
+  it('lights windows deterministically, inside their towers, with slow drift periods', () => {
+    const lights = buildWindows(7, GROUND_Y);
+    expect(lights).toEqual(buildWindows(7, GROUND_Y));
+    expect(lights).not.toEqual(buildWindows(8, GROUND_Y));
+    expect(lights.length).toBeGreaterThan(10);
+    for (const l of lights) {
+      const tower = SKYLINE.find((b) => l.x >= b.x && l.x + 2 <= b.x + b.w && ['block', 'rialto', 'eureka'].includes(b.kind));
+      expect(tower).toBeDefined();
+      expect(l.y).toBeGreaterThanOrEqual(GROUND_Y - tower!.h);
+      expect(l.y + 2).toBeLessThanOrEqual(GROUND_Y);
+      expect(l.period).toBeGreaterThanOrEqual(LIGHT_PERIOD_MIN);
+      expect(l.period).toBeLessThanOrEqual(LIGHT_PERIOD_MAX);
     }
   });
 });
 
-describe('ledLevel', () => {
+describe('lightLevel', () => {
   it('glows steadily: always lit, never a step, constant under reduced motion', () => {
-    const racks = buildSkyline(7);
-    for (const led of racks.flatMap((r) => r.leds).slice(0, 12)) {
-      let prev = ledLevel(0, led);
+    for (const light of buildWindows(7, GROUND_Y).slice(0, 12)) {
+      let prev = lightLevel(0, light);
       for (let ms = 16; ms <= 20000; ms += 16) {
-        const level = ledLevel(ms, led);
-        expect(level).toBeGreaterThanOrEqual(LED_MIN);
-        expect(level).toBeLessThanOrEqual(LED_MAX);
+        const level = lightLevel(ms, light);
+        expect(level).toBeGreaterThanOrEqual(LIGHT_MIN);
+        expect(level).toBeLessThanOrEqual(LIGHT_MAX);
         expect(Math.abs(level - prev)).toBeLessThan(0.01);
         prev = level;
       }
-      expect(ledLevel(1234, led, true)).toBe(ledLevel(9876, led, true));
+      expect(lightLevel(1234, light, true)).toBe(lightLevel(9876, light, true));
     }
   });
 });
 
-describe('buildTokens', () => {
-  it('keeps tokens inside the tile and clear of the ground glow', () => {
-    const spots = buildTokens(3);
-    expect(spots).toHaveLength(7);
-    for (const t of spots) {
-      expect(t.x).toBeGreaterThanOrEqual(0);
-      expect(t.x).toBeLessThan(TOKENS_TILE_W);
-      expect(t.y).toBeGreaterThanOrEqual(30);
-      expect(t.y).toBeLessThanOrEqual(200);
-      expect(t.bob).toBeGreaterThanOrEqual(2);
-      expect(t.bob).toBeLessThanOrEqual(3);
+describe('terraces and haze', () => {
+  it('fill the roof tile edge to edge with low roofs, deterministically', () => {
+    const row = buildTerraces(11);
+    expect(row).toEqual(buildTerraces(11));
+    expect(row[0]!.x).toBe(0);
+    for (let i = 0; i < row.length; i++) {
+      const t = row[i]!;
+      expect(t.h).toBeGreaterThanOrEqual(10);
+      expect(t.h).toBeLessThanOrEqual(22);
+      expect(t.x + t.w).toBeLessThanOrEqual(ROOFS_TILE_W);
+      if (i > 0) expect(t.x).toBe(row[i - 1]!.x + row[i - 1]!.w);
+      if (t.chimney !== null) expect(t.chimney + 3).toBeLessThanOrEqual(t.w);
+      if (t.smoke) expect(t.chimney).not.toBeNull();
     }
-    expect(buildTokens(3)).toEqual(buildTokens(3));
+  });
+
+  it('keeps haze inside its tile and clear of the ground', () => {
+    for (const h of buildHaze(3)) {
+      expect(h.x).toBeGreaterThanOrEqual(0);
+      expect(h.x).toBeLessThan(SKYLINE_TILE_W);
+      expect(h.y + 1).toBeLessThan(GROUND_Y);
+    }
+  });
+});
+
+describe('tram', () => {
+  it('is off screen most of the time and crosses the whole street when it passes', () => {
+    let visible = 0;
+    const n = 4000;
+    for (let i = 0; i < n; i++) {
+      const x = tramX((i / n) * (TRAM_LOOP / TRAM_SPEED), WORLD_W);
+      if (x < WORLD_W && x + TRAM_W > 0) visible++;
+    }
+    expect(visible / n).toBeGreaterThan(0.1);
+    expect(visible / n).toBeLessThan(0.3);
   });
 });
 
@@ -101,6 +123,17 @@ describe('sky phases', () => {
       expect(lum(p.top)).toBeLessThan(40);
       expect(lum(p.mid)).toBeLessThan(48);
       expect(lum(p.glow)).toBeLessThan(100);
+    }
+  });
+
+  it('are drawn in a few stepped bands that run from the top colour to the horizon glow', () => {
+    expect(mixHex('#000000', '#ffffff', 0.5)).toBe('#808080');
+    for (const p of SKY_PHASES) {
+      const bands = skyBands(p);
+      expect(bands).toHaveLength(6);
+      expect(bands[0]!.colour).toBe(p.top);
+      expect(bands[bands.length - 1]!.colour).toBe(p.glow);
+      for (let i = 1; i < bands.length; i++) expect(bands[i]!.from).toBeGreaterThan(bands[i - 1]!.from);
     }
   });
 });

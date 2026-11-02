@@ -1,11 +1,11 @@
 {
-  "name": "claude-glide",
+  "name": "pammy-bird",
   "private": true,
   "version": "1.1.1",
   "type": "module",
-  "description": "Claude Glide - an unofficial Flappy-style fan game: tap to flap, thread the gaps, beat your best. Built by CyberSquad0 + Claude.",
+  "description": "Pammy Bird - an unofficial Flappy-style fan game starring Pam the bird over Melbourne: tap to flap, thread the gaps, beat your best. Built by CyberSquad0 + Claude.",
   "author": { "name": "CyberSquad0", "url": "https://www.cs0.dev" },
-  "homepage": "https://meridian-knight.github.io/claude-glide/",
+  "homepage": "https://meridian-knight.github.io/pammy-bird/",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
@@ -14,7 +14,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "serve:subpath": "node scripts/serve-dist.mjs 4174",
-    "assets": "node scripts/make-assets.mjs public social-preview-v1.png",
+    "assets": "node scripts/make-assets.mjs public social-preview-v2.png",
     "shots": "node scripts/readme-shots.mjs docs"
   },
   "devDependencies": {

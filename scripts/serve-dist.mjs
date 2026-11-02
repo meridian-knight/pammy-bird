@@ -1,11 +1,11 @@
-// Serves ./dist under a sub-path (default /claude-glide/) to verify relative asset paths.
+// Serves ./dist under a sub-path (default /pammy-bird/) to verify relative asset paths.
 // Usage: node scripts/serve-dist.mjs [port] [subpath]
 import { createServer } from 'node:http';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 
 const port = Number(process.argv[2] ?? 4174);
-const subpath = (process.argv[3] ?? '/claude-glide/').replace(/\/?$/, '/');
+const subpath = (process.argv[3] ?? '/pammy-bird/').replace(/\/?$/, '/');
 const root = join(process.cwd(), 'dist');
 const types = {
   '.html': 'text/html; charset=utf-8',

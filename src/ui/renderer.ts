@@ -7,23 +7,34 @@ import { agentSprite, SPRITE_PX, type Face, type Gaze, type Wing } from './sprit
 import { CHOMP_MS, FLAP_WING_MS, MILESTONE_FLOAT_MS, SCORE_FLOAT_MS, SHAKE_MS, type VisualState } from './visual';
 
 const COLOURS = {
-  well: '#120e0b',
-  screen: '#1c1712',
-  blockEdge: '#9a4f36',
-  blockHot: '#d97757',
-  blockFill: '#f3e6cf',
-  blockLight: '#fff6e6',
-  pin: '#d97757',
-  spark: '#f7c948',
-  hotBand: '#f4a97a',
+  well: '#0b0a14',
+  screen: '#141326',
   text: '#f3e6cf',
-  milestone: '#f4a97a',
+  milestone: '#f87a1c',
   debugAgent: '#7cfc00',
   debugObstacle: '#ff5252',
   debugGap: 'rgba(124, 252, 0, 0.12)',
 };
 
-/** Each stack is a column of chip blocks this tall (world units), built out from the gap. */
+/**
+ * Stacks are red-brick Victorian chimneys (JZ's pick from the Melbourne theme
+ * board). Every block fills its whole 40 × 20 cell, so the drawn stack is
+ * exactly the stack's collision box.
+ */
+const BRICK = {
+  mortar: '#d9c8a6',
+  brick: '#a4442e',
+  light: '#c25a3c',
+  dark: '#6e2a1e',
+  edge: '#3a1610',
+  cap: '#e4dac2',
+  capLight: '#f6efdc',
+  capDark: '#8a8070',
+};
+
+type Cap = 'top' | 'bottom' | null;
+
+/** Each stack is a column of blocks this tall (world units), built out from the gap. */
 const BLOCK_H = 20;
 /** Blink timing on the fixed-step clock (deterministic): 100 ms every 1.5 s. */
 const BLINK_PERIOD = 180;
@@ -112,6 +123,8 @@ export class Renderer {
     const c = document.createElement('canvas');
     c.width = this.canvas.width;
     c.height = this.canvas.height;
+    // Before the first layout the frame can measure 0 px; drawing a 0-px canvas throws and would stop the loop.
+    if (!c.width || !c.height) return null;
     const ctx = c.getContext('2d');
     if (!ctx) return null;
     const cx = c.width / 2;
@@ -150,17 +163,56 @@ export class Renderer {
     this.ctx.fillRect(x0, y0, this.X(x + w) - x0, this.Y(y + h) - y0);
   }
 
-  private drawBlock(x: number, y: number, hotEdge: 'top' | 'bottom' | null): void {
-    this.rect(x, y, C.OB_W, BLOCK_H, hotEdge ? COLOURS.blockHot : COLOURS.blockEdge);
-    this.rect(x + 2, y + 2, C.OB_W - 4, BLOCK_H - 4, COLOURS.blockFill);
-    this.rect(x + 2, y + 2, C.OB_W - 4, 2, COLOURS.blockLight);
-    this.rect(x + 2, y + 2, 2, BLOCK_H - 4, COLOURS.blockLight);
-    // Two connector pins and a spark, so the blocks read as the series' AI chips.
-    this.rect(x + 8, y + 8, 4, 4, COLOURS.pin);
-    this.rect(x + C.OB_W - 12, y + 8, 4, 4, COLOURS.pin);
-    this.rect(x + C.OB_W / 2 - 2, y + 8, 4, 4, COLOURS.spark);
-    if (hotEdge === 'bottom') this.rect(x, y + BLOCK_H - 2, C.OB_W, 2, COLOURS.hotBand);
-    if (hotEdge === 'top') this.rect(x, y, C.OB_W, 2, COLOURS.hotBand);
+  /** One 40 × 20 brick block as a cached tile at the current scale; `cap` marks the gap edge. */
+  private blockTile(cap: Cap): HTMLCanvasElement {
+    const s = this.fit.scale;
+    return this.sprite(`block:${cap}:${s}`, () => {
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(C.OB_W * s));
+      c.height = Math.max(1, Math.round(BLOCK_H * s));
+      const ctx = c.getContext('2d');
+      if (!ctx) return c;
+      const r = (x: number, y: number, w: number, h: number, colour: string): void => {
+        const x0 = Math.round(x * s);
+        const y0 = Math.round(y * s);
+        ctx.fillStyle = colour;
+        ctx.fillRect(x0, y0, Math.round((x + w) * s) - x0, Math.round((y + h) * s) - y0);
+      };
+      // Running-bond brick, darker on the shaded right, with a cream capstone and corbel at the gap edge.
+      const p = BRICK;
+      r(0, 0, C.OB_W, BLOCK_H, p.mortar);
+      for (let row = 0; row < BLOCK_H / 4; row++) {
+        const cy = row * 4;
+        for (let bx = row % 2 ? -4 : 0; bx < C.OB_W; bx += 8) {
+          const x0 = Math.max(bx, 0);
+          const x1 = Math.min(bx + 7, C.OB_W);
+          if (x1 <= x0) continue;
+          const shaded = x0 >= C.OB_W - 8;
+          r(x0, cy, x1 - x0, 3, shaded ? p.dark : p.brick);
+          r(x0, cy, x1 - x0, 1, shaded ? p.brick : p.light);
+        }
+      }
+      r(0, 0, 1, BLOCK_H, p.edge);
+      r(C.OB_W - 1, 0, 1, BLOCK_H, p.edge);
+      if (cap === 'top') {
+        r(0, 0, C.OB_W, 5, p.cap);
+        r(0, 0, C.OB_W, 1, p.capLight);
+        r(0, 4, C.OB_W, 1, p.capDark);
+        r(0, 5, C.OB_W, 2, p.dark);
+      } else if (cap === 'bottom') {
+        r(0, BLOCK_H - 7, C.OB_W, 2, p.dark);
+        r(0, BLOCK_H - 5, C.OB_W, 5, p.cap);
+        r(0, BLOCK_H - 5, C.OB_W, 1, p.capLight);
+        r(0, BLOCK_H - 1, C.OB_W, 1, p.capDark);
+      }
+      return c;
+    });
+  }
+
+  private drawBlock(x: number, y: number, cap: Cap): void {
+    const x0 = this.X(x);
+    const y0 = this.Y(y);
+    this.ctx.drawImage(this.blockTile(cap), x0, y0, this.X(x + C.OB_W) - x0, this.Y(y + BLOCK_H) - y0);
   }
 
   /** A stack: blocks stacked away from the gap, so the block at the gap edge is always whole. */
@@ -177,6 +229,11 @@ export class Renderer {
       this.drawBlock(ob.x, y, first ? 'top' : null);
       first = false;
     }
+  }
+
+  /** Test-only: sets the parallax scroll distance so scenes can be captured repeatably. */
+  setScroll(x: number): void {
+    this.scrollX = x;
   }
 
   draw(state: GameState, visual: VisualState, now: number): void {
@@ -210,8 +267,8 @@ export class Renderer {
     // Backdrop layers, far to near.
     this.backdrop.drawSky(ctx, visual.phase, visual.prevPhase, visual.phaseBlend(now));
     this.backdrop.drawSkyline(ctx, this.scrollX, now, reduced);
-    this.backdrop.drawTokens(ctx, this.scrollX, reduced);
-    this.backdrop.drawDust(ctx, this.scrollX);
+    this.backdrop.drawRoofs(ctx, this.scrollX, now, reduced);
+    this.backdrop.drawHaze(ctx, this.scrollX);
 
     for (const ob of state.obstacles) this.drawStack(ob);
 

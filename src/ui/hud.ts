@@ -126,7 +126,7 @@ export class Hud {
     this.hint.textContent = status === 'idle' && TOUCH ? 'Tap the screen to flap.' : '';
     switch (status) {
       case 'idle':
-        this.title.textContent = 'Claude Glide';
+        this.title.textContent = 'Pammy Bird';
         this.text.textContent = 'Tap to flap. Thread the gaps. Beat your best.';
         this.keys.textContent = 'Avoid the stacks and the ground.';
         this.actionButton.textContent = 'Start';

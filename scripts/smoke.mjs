@@ -58,7 +58,7 @@ async function session(label, ctxOpts, touch) {
   await page.screenshot({ path: `${out}/${label}-4-dying.png` });
   await page.waitForTimeout(600);
   s = await g();
-  console.log('over cause', s.cause, 'score', s.score, 'best stored', await page.evaluate(() => localStorage.getItem('claude-glide:best')));
+  console.log('over cause', s.cause, 'score', s.score, 'best stored', await page.evaluate(() => localStorage.getItem('pammy-bird:best')));
   await page.screenshot({ path: `${out}/${label}-5-over.png` });
   console.log('frames', JSON.stringify(await page.evaluate(() => window.__glide.frameStats())));
   console.log('audio', await page.evaluate(() => window.__glide.audioState()));

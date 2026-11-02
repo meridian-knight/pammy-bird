@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 const PORT = 4173;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 const SUBPATH_PORT = 4174;
-const SUBPATH_URL = `http://127.0.0.1:${SUBPATH_PORT}/claude-glide/`;
+const SUBPATH_URL = `http://127.0.0.1:${SUBPATH_PORT}/pammy-bird/`;
 
 /** Only the layout, readiness and start-screen checks run on the extra viewports. */
 const MATRIX_ONLY = /mobile readiness|fit the viewport|start screen|world scale/;
