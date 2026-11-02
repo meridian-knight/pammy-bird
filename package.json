@@ -1,7 +1,7 @@
 {
   "name": "pammy-bird",
   "private": true,
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "module",
   "description": "Pammy Bird - an unofficial Flappy-style fan game starring Pam the bird over Melbourne: tap to flap, thread the gaps, beat your best. Built by CyberSquad0 + Claude.",
   "author": { "name": "CyberSquad0", "url": "https://www.cs0.dev" },
@@ -14,7 +14,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "serve:subpath": "node scripts/serve-dist.mjs 4174",
-    "assets": "node scripts/make-assets.mjs public social-preview-v3.png",
+    "assets": "node scripts/make-assets.mjs public social-preview-v4.png",
     "shots": "node scripts/readme-shots.mjs docs"
   },
   "devDependencies": {

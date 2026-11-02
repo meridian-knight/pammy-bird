@@ -21,7 +21,7 @@ A static browser game in the Flappy Bird style: Pam, a yellow 8-bit bird, flies 
 - Page title: "Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0".
 - Pam: the A5a sprite (32×32, six colours, 40 states), picked by the owner on 2 Nov 2026 to sit closer to the mousepad Pam: a longer block body, the cap bowl hanging from the top line behind the eye, the eye high against the beak root. It keeps Iris's A4-32 palette, identity cues and face, gaze and wing rules (lock L02) and is drawn in the Image Generation library (Pammy Bird, entry C61); never recolour or redraw it here. The 16px favicon set is hand-drawn to match, not a downscale.
 - World: 8-bit Melbourne at dusk, one world unit per art pixel (the same grain as Pam); no smooth gradients; nothing near Pam as bright as her yellow.
-- Social preview: `public/social-preview-v3.png`. Bump the version number on every artwork change and update all four references in `index.html` (og:image, og:image:secure_url, twitter:image, JSON-LD image) plus the release test and `verify-live.mjs`.
+- Social preview: `public/social-preview-v4.png`. Bump the version number on every artwork change and update all four references in `index.html` (og:image, og:image:secure_url, twitter:image, JSON-LD image) plus the release test and `verify-live.mjs`.
 - No licence file, by choice (as Claude Swarm).
 
 ## Architecture
@@ -108,10 +108,11 @@ node scripts/audit-help.mjs            # help dialog fit across 6 viewports
 
 ## Release history
 
-The first Pammy Bird release is 2.0.0. The v1.x rows are Claude Glide's, kept as lineage; their tags stay in the local clone only.
+The first Pammy Bird release is 2.0.0 (2.0.1 the same day: social card and favicon). The v1.x rows are Claude Glide's, kept as lineage; their tags stay in the local clone only.
 
 | Tag | Content |
 |---|---|
+| `v2.0.1` / `deployed-v2.0.1` | social card v4 laid out like Claude Glide's with Pam alone (no game frame; `make-assets.mjs` no longer needs a dev server); 16px favicon redrawn with the eye ringed on all four sides, a rounder cap and two tail notches |
 | `v2.0.0` / `deployed-v2.0.0` | first Pammy Bird release (2026-11-02): Melbourne at dusk, brick chimney stacks, Pam A5a sprite and favicon, Pammy Bird name and storage keys; gameplay as 1.1.1 with the 18x12 hitbox |
 | `v1.0.0` / `deployed-v1.0.0` | first public release (2026-10-20) |
 | `v1.0.1` / `deployed-v1.0.1` | no double-tap zoom on any element (owner found it on a phone) |

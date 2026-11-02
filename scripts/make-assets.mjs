@@ -4,19 +4,18 @@
 // favicon-16.png, favicon-32.png) are a hand-drawn 16px Pam matching A5a, committed in
 // public/ as delivered: this script does not write them, because a 32px sprite
 // downscaled to 16px loses Pam's features.
-// The social preview shows a frame captured from the running game, so start the
-// dev server (npm run dev) or the preview server first and pass its URL if it is
-// not the dev default.
-// Usage: node scripts/make-assets.mjs <outDir> [previewFileName] [gameUrl]
-// Example: npm run assets   (writes into public/, preview as social-preview-v3.png)
+// The social preview is laid out like Claude Glide's: the title block centred and
+// a large Pam alone at a whole number of px per art pixel (no game frame), so no
+// dev server is needed.
+// Usage: node scripts/make-assets.mjs <outDir> [previewFileName]
+// Example: npm run assets   (writes into public/, preview as social-preview-v4.png)
 import { chromium } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { agentGrid, PALETTE, SPRITE_PX } from '../src/art/agent-grid.js';
 
 const out = process.argv[2] ?? 'public';
-const previewName = process.argv[3] ?? 'social-preview-v3.png';
-const gameUrl = process.argv[4] ?? 'http://127.0.0.1:5173/';
+const previewName = process.argv[3] ?? 'social-preview-v4.png';
 mkdirSync(out, { recursive: true });
 
 const rects = (g, ox = 0, oy = 0) =>
@@ -38,58 +37,28 @@ function icon(tile, k) {
 
 const browser = await chromium.launch();
 
-// --- Social preview 1200x630: the title and a large Pam beside a real game frame
-// (Melbourne at dusk, brick chimney stacks), captured from the running game.
-const game = await browser.newPage({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 2 });
-try {
-  await game.goto(`${gameUrl}?test&seed=4`);
-} catch {
-  throw new Error(`No game at ${gameUrl}: run npm run dev (or preview and pass its URL) first.`);
-}
-await game.waitForFunction(() => window.__glide && window.__glide.frameStats().samples > 5);
-await game.locator('#action-btn').click();
-await game.waitForFunction(() => window.__glide.getState().status === 'running');
-await game.addStyleTag({ content: '#hover-hint{visibility:hidden!important}' });
-await game.evaluate(() => {
-  window.__glide.setObstacles([
-    { id: 3, x: 118, gapY: 150, gapH: 100, passed: false },
-    { id: 4, x: 238, gapY: 128, gapH: 100, passed: false },
-  ]);
-  window.__glide.setAgent({ y: 150, vy: 0 });
-  window.__glide.setScene({ scroll: 300, phase: 0 });
-});
-await game.waitForTimeout(250);
-// World x 0-240, y 50-320: the sky band with Pam, both stacks, the skyline and the street.
-const m = await game.evaluate(() => window.__glide.boardMetrics());
-const box = await game.locator('#board').boundingBox();
-const k = m.scale / m.dpr;
-const shot = await game.screenshot({
-  clip: { x: box.x + m.letterbox[0] / m.dpr, y: box.y + (m.letterbox[1] / m.dpr) + 50 * k, width: 240 * k, height: 270 * k },
-});
-const sceneW = Math.round(240 * k);
-const sceneH = Math.round(270 * k);
-await game.close();
-
-const bigPam = svgDoc(SPRITE_PX, 20, `<g transform="translate(0 -8)">${rects(agentGrid({ wing: 1, gaze: 'right' }))}</g>`);
+// --- Social preview 1200x630, laid out like Claude Glide's: eyebrow, title and
+// tagline centred, then Pam alone (wing 1, looking ahead), art rows 8-24 at exactly
+// PAM_PX px per art pixel so every sprite pixel is the same size, then the footer.
+const PAM_PX = 10;
+const PAM_ROWS = 17; // art rows 8-24 hold every state
+const bigPam = svgDoc(SPRITE_PX, PAM_ROWS, `<g transform="translate(0 -8)">${rects(agentGrid({ wing: 1, gaze: 'right' }))}</g>`);
 const social = `<!doctype html><html><head><meta charset="utf-8"><style>
   body{margin:0;width:1200px;height:630px;overflow:hidden;background:#0e0d18;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:#efe4d3}
-  .glow{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 30%, rgba(252,196,28,.12), transparent 60%)}
+  .glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%, rgba(252,196,28,.12), transparent 60%)}
   .frame{position:absolute;inset:36px;border:3px solid #2e2b4a;border-radius:34px;box-shadow:inset 0 0 0 10px #1c1a2e}
-  .eyebrow{position:absolute;top:96px;left:96px;font-size:18px;letter-spacing:.3em;color:#8f8ba6;text-transform:uppercase}
-  h1{position:absolute;top:124px;left:92px;margin:0;font-size:76px;font-weight:800;letter-spacing:.1em;color:#fcc41c;text-shadow:5px 5px 0 #b8460c,0 0 36px rgba(252,196,28,.35);text-transform:uppercase}
-  .tag{position:absolute;top:226px;left:96px;font-size:26px;line-height:1.4;letter-spacing:.04em;color:#f3e6cf}
-  .pam{position:absolute;top:322px;left:150px;width:${SPRITE_PX * 10}px;height:${20 * 10}px}
+  .eyebrow{position:absolute;top:84px;left:0;right:0;text-align:center;font-size:20px;letter-spacing:.32em;color:#8f8ba6;text-transform:uppercase}
+  h1{position:absolute;top:116px;left:0;right:0;margin:0;text-align:center;font-size:96px;font-weight:800;letter-spacing:.14em;color:#fcc41c;text-shadow:5px 5px 0 #b8460c,0 0 36px rgba(252,196,28,.35);text-transform:uppercase}
+  .tag{position:absolute;top:248px;left:0;right:0;text-align:center;font-size:30px;letter-spacing:.06em;color:#f3e6cf}
+  .pam{position:absolute;left:${(1200 - SPRITE_PX * PAM_PX) / 2}px;top:${312 + (200 - PAM_ROWS * PAM_PX) / 2}px;width:${SPRITE_PX * PAM_PX}px;height:${PAM_ROWS * PAM_PX}px}
   .pam svg{display:block;width:100%;height:100%;image-rendering:pixelated}
-  .scene{position:absolute;right:92px;top:96px;width:${sceneW}px;height:${sceneH}px;border-radius:10px;overflow:hidden;box-shadow:0 0 0 3px #08070f,0 0 24px rgba(252,196,28,.1)}
-  .scene img{display:block;width:100%;height:100%}
-  .foot{position:absolute;bottom:62px;left:96px;font-size:18px;letter-spacing:.16em;color:#8f8ba6;text-transform:uppercase}
+  .foot{position:absolute;bottom:64px;left:0;right:0;text-align:center;font-size:20px;letter-spacing:.18em;color:#8f8ba6;text-transform:uppercase}
 </style></head><body>
   <div class="glow"></div><div class="frame"></div>
   <div class="eyebrow">Flappy-style retro fan game</div>
   <h1>Pammy Bird</h1>
-  <div class="tag">Tap to flap. Thread the gaps.<br>Beat your best.</div>
+  <div class="tag">Tap to flap. Thread the gaps. Beat your best.</div>
   <div class="pam">${bigPam}</div>
-  <div class="scene"><img src="data:image/png;base64,${shot.toString('base64')}"></div>
   <div class="foot">Unofficial fan game · Built by Cyber Squad Zero + Claude</div>
 </body></html>`;
 

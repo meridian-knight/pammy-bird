@@ -595,7 +595,7 @@ test.describe('release checks', () => {
     const inline = html.match(/<script(?![^>]*src=)[^>]*>/g) ?? [];
     expect(inline).toHaveLength(1);
     expect(inline[0]).toContain('application/ld+json');
-    expect(html.split('social-preview-v3.png')).toHaveLength(5); // og:image, secure_url, twitter:image, JSON-LD
+    expect(html.split('social-preview-v4.png')).toHaveLength(5); // og:image, secure_url, twitter:image, JSON-LD
     const meta = await page.evaluate(() => ({
       description: document.querySelector('meta[name=description]')?.getAttribute('content'),
       canonical: document.querySelector('link[rel=canonical]')?.getAttribute('href'),
@@ -608,13 +608,13 @@ test.describe('release checks', () => {
     expect(meta.description).toContain('Built by CyberSquad0 + Claude.');
     expect(meta.canonical).toBe('https://meridian-knight.github.io/pammy-bird/');
     expect(meta.ogTitle).toBe('Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0');
-    expect(meta.ogImage).toBe('https://meridian-knight.github.io/pammy-bird/social-preview-v3.png');
+    expect(meta.ogImage).toBe('https://meridian-knight.github.io/pammy-bird/social-preview-v4.png');
     expect(meta.twitterCard).toBe('summary_large_image');
     expect(meta.theme).toBe('#0e0d18');
     expect(meta.ld['@type']).toBe('VideoGame');
     expect(meta.ld.name).toBe('Pammy Bird');
     expect(meta.ld.author).toEqual({ '@type': 'Organization', name: 'CyberSquad0', url: 'https://www.cs0.dev' });
-    for (const file of ['favicon.svg', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'social-preview-v3.png', 'robots.txt']) {
+    for (const file of ['favicon.svg', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'social-preview-v4.png', 'robots.txt']) {
       const r = await page.request.get(new URL(file, baseURL!).toString());
       expect(r.status(), file).toBe(200);
     }

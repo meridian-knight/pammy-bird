@@ -48,7 +48,7 @@ async function session(label, ctxOpts, touch) {
   }));
   check(`${label}: title credits CyberSquad0`, meta.title === 'Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0', meta.title);
   check(`${label}: description (flight copy, CyberSquad0 credit)`, (meta.desc || '').startsWith('Tap to flap, thread the gaps and beat your best.') && (meta.desc || '').endsWith('Built by CyberSquad0 + Claude.'), meta.desc);
-  check(`${label}: canonical + og:image v3`, meta.canonical === BASE && meta.ogImage === BASE + 'social-preview-v3.png');
+  check(`${label}: canonical + og:image v4`, meta.canonical === BASE && meta.ogImage === BASE + 'social-preview-v4.png');
   check(`${label}: CSP meta present`, meta.csp);
   check(`${label}: start copy`, meta.startText === 'Tap to flap. Thread the gaps. Beat your best.' && meta.rule === 'Avoid the stacks and the ground.');
   check(`${label}: scoreboard says Score and Best only`, /Score/.test(meta.scoreboard) && /Best/.test(meta.scoreboard) && !/Agents/.test(meta.scoreboard));
@@ -57,7 +57,7 @@ async function session(label, ctxOpts, touch) {
   const credit = await page.evaluate(() => { const a = document.querySelector('.foot a.credit-link'); return a ? { href: a.href, rel: a.rel, text: a.innerText } : null; });
   check(`${label}: credit link to cs0.dev`, !!credit && credit.href === 'https://www.cs0.dev/' && /noopener/.test(credit.rel) && credit.text === 'CYBER SQUAD ZERO', JSON.stringify(credit));
   check(`${label}: layout`, meta.layout === (touch ? 'touch' : 'desktop'));
-  for (const p of ['favicon.svg', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'social-preview-v3.png', 'robots.txt']) {
+  for (const p of ['favicon.svg', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'social-preview-v4.png', 'robots.txt']) {
     const r = await page.request.get(BASE + p);
     check(`${label}: ${p}`, r.status() === 200);
   }
