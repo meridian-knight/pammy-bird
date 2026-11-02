@@ -1,7 +1,7 @@
 {
   "name": "pammy-bird",
   "private": true,
-  "version": "1.1.1",
+  "version": "2.0.0",
   "type": "module",
   "description": "Pammy Bird - an unofficial Flappy-style fan game starring Pam the bird over Melbourne: tap to flap, thread the gaps, beat your best. Built by CyberSquad0 + Claude.",
   "author": { "name": "CyberSquad0", "url": "https://www.cs0.dev" },

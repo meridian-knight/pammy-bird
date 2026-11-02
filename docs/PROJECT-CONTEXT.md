@@ -6,10 +6,10 @@ Read this first when resuming development. It records what the game is, the deci
 
 A static browser game in the Flappy Bird style: Pam, a yellow 8-bit bird, flies right over Melbourne at dusk through gaps in brick chimney "stacks"; tap, click or Space flaps; one point per stack passed; a stack or the ground ends the run. No backend, no accounts, no AI API, no network traffic after load. In the code the character is still called the "agent" (`agentGrid`, `AGENT_W`); players only ever see "Pam".
 
-- Live: not yet; the planned address is https://meridian-knight.github.io/pammy-bird/ (all metadata already points there).
-- Repository: local only at `~/Pammy Bird Game`, cloned from claude-glide with its history and no remote. A GitHub repository (planned `meridian-knight/pammy-bird`) is created only on the owner's say-so; claude-glide itself is unchanged.
+- Live: https://meridian-knight.github.io/pammy-bird/ (GitHub Pages, deployed from `main` by `.github/workflows/deploy-pages.yml`).
+- Repository: https://github.com/meridian-knight/pammy-bird (created for 2.0.0 on 2 Nov 2026). Cloned from claude-glide with its history, but the claude-glide tags (v1.x, deployed-v1.x) were not pushed; claude-glide itself is unchanged.
 - Stack: Vite 8, TypeScript 5.9, Vitest, Playwright. No runtime dependencies. Same pinned versions as Claude Swarm.
-- Sibling project: Claude Swarm at `/Users/agentnoz/Claude Swarm Game` (frozen, do not modify). The platform modules here were copied from it; see "Lineage".
+- Sibling project: Claude Swarm at `~/Claude Swarm Game` (frozen, do not modify). The platform modules here were copied from it; see "Lineage".
 
 ## Brand and copy rules (fixed)
 
@@ -108,10 +108,11 @@ node scripts/audit-help.mjs            # help dialog fit across 6 viewports
 
 ## Release history
 
-Pammy Bird has no release yet. The rows below are Claude Glide's.
+The first Pammy Bird release is 2.0.0. The v1.x rows are Claude Glide's, kept as lineage; their tags stay in the local clone only.
 
 | Tag | Content |
 |---|---|
+| `v2.0.0` / `deployed-v2.0.0` | first Pammy Bird release (2026-11-02): Melbourne at dusk, brick chimney stacks, Pam A5a sprite and favicon, Pammy Bird name and storage keys; gameplay as 1.1.1 with the 18x12 hitbox |
 | `v1.0.0` / `deployed-v1.0.0` | first public release (2026-10-20) |
 | `v1.0.1` / `deployed-v1.0.1` | no double-tap zoom on any element (owner found it on a phone) |
 | `v1.1.0` / `deployed-v1.1.0` | varied stacks, data-centre-at-dusk backdrop with sky phases, zoom fully disabled |
@@ -124,5 +125,4 @@ Pammy Bird has no release yet. The rows below are Claude Glide's.
 ## Open items
 
 - Physical-device verification (above).
-- Repository description, website and topics: set at release with `gh repo edit` (see README/plan).
 - Tuning: `config.ts` values are a first pass that a naive autopilot survives; adjust from real play if the first stack feels unfair or long runs feel too easy.
