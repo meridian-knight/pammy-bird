@@ -19,9 +19,9 @@ A static browser game in the Flappy Bird style: Pam, a yellow 8-bit bird, flies 
 - Credits: uppercase **BUILT BY CYBER SQUAD ZERO + CLAUDE**, mixed case **Built by CyberSquad0 + Claude.** The footer is uppercase via CSS, so the uppercase form is written literally there; never place "CyberSquad0" inside an element with `text-transform: uppercase`.
 - Disclaimer (keep): "Not affiliated with or endorsed by Anthropic." plus "Unofficial fan game". README adds "Not affiliated with the makers of Flappy Bird."
 - Page title: "Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0".
-- Pam: the A4-32 sprite by Iris (32×32, six colours, 40 states) is locked art; never recolour or redraw it here. Her identity cues and palette are recorded in the Image Generation library (Pammy Bird, lock L02).
+- Pam: the A5a sprite (32×32, six colours, 40 states), picked by the owner on 2 Nov 2026 to sit closer to the mousepad Pam: a longer block body, the cap bowl hanging from the top line behind the eye, the eye high against the beak root. It keeps Iris's A4-32 palette, identity cues and face, gaze and wing rules (lock L02) and is drawn in the Image Generation library (Pammy Bird, entry C61); never recolour or redraw it here. The 16px favicon set is hand-drawn to match, not a downscale.
 - World: 8-bit Melbourne at dusk, one world unit per art pixel (the same grain as Pam); no smooth gradients; nothing near Pam as bright as her yellow.
-- Social preview: `public/social-preview-v2.png`. Bump the version number on every artwork change and update all four references in `index.html` (og:image, og:image:secure_url, twitter:image, JSON-LD image) plus the release test and `verify-live.mjs`.
+- Social preview: `public/social-preview-v3.png`. Bump the version number on every artwork change and update all four references in `index.html` (og:image, og:image:secure_url, twitter:image, JSON-LD image) plus the release test and `verify-live.mjs`.
 - No licence file, by choice (as Claude Swarm).
 
 ## Architecture
@@ -31,7 +31,7 @@ src/game/      pure rules, no DOM: createGame, startGame, restartGame, togglePau
                (one fixed 120 Hz step, no dt parameter), speedAt, gapHeightAt, agentBox,
                obstacleBoxes. config.ts is the ONLY tuning table (world, physics, stacks,
                ramp, lockouts). Injected mulberry32 Rng (?seed=N).
-src/art/       agent-grid.js (+ .d.ts): Pam's 32x32 grid (Iris's A4-32, byte-identical), shared by
+src/art/       agent-grid.js (+ .d.ts): Pam's 32x32 grid (A5a, byte-identical to the library copy), shared by
                sprites.ts and scripts/make-assets.mjs so icons and the preview never drift.
                token-grid.js: the series' 12x12 chip, no longer drawn; kept for its unit test.
 src/ui/        sizing (pure fit of the fixed 240x320 world into a 1:1 whole-pixel canvas),
@@ -66,7 +66,7 @@ tests/e2e      Playwright matrix, 14 projects (desktop, short desktop, five phon
 - **Closing overlay.** `.overlay:not(.is-open) { pointer-events: none }`: during the 200 ms fade after Start/Resume the first tap must reach the frame (found by the touch tests).
 - **Pause policy.** `visibilitychange` (hidden), `blur`, `pagehide` and rotation (`orientationchange`, `screen.orientation` change) pause; resuming is always explicit. Window/toolbar resizes only refit. Opening help pauses and closing resumes only if help caused the pause; input is blocked while it is open (Space on the focused Close button closes it, which is standard).
 - **Difficulty.** By score only: speed 96 → 128 units/s (+1.6 per point, cap at 20), gap 100 → 84 units (−0.5 per point, floor at 32) before per-stack jitter; the first stack's gap stays within 40 of the start height. Reachability is a unit test over the config (closed form at both spacing extremes plus a 6000-step autopilot run).
-- **Fair hitbox.** 18x12 over Pam's body inside the 32x32 box (art columns 5-22, rows 10-21; beak, tail, cap and feet are outside it); strict overlap, so touching edges survive; the ceiling clamps at the top of the drawn art (row 8) without killing. Was 16x16 inside 24x24 in Claude Glide; the change awaits the owner's playtest.
+- **Fair hitbox.** 18x12 over Pam's body inside the 32x32 box (art columns 5-22, rows 10-21; beak, tail, cap and feet are outside it); strict overlap, so touching edges survive; the ceiling clamps at the top of the drawn art (row 8) without killing. Was 16x16 inside 24x24 in Claude Glide; the owner playtested the 18x12 box on desktop on 2 Nov 2026 ("Feels right"). A5a keeps it: the box stays on the drawn body in every state (unit test).
 - **Audio** unlocks on pointerdown, pointerup, touchend, click and keydown and resumes a suspended context; a silent buffer kick helps older iOS. Flap is a quiet triangle chirp. Mute persists in localStorage.
 - **Haptics:** 15 ms on score, 30/40/60 ms on death, never on flap; only where `navigator.vibrate` exists on a coarse-pointer device (Android). iOS has no vibration API and nothing promises it.
 - **Reduced motion** disables parallax scroll, hover bob, death tumble and shake, the "+1" rise, the prompt blink, overlay transitions and mascot motion.

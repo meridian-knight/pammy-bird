@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/favicon.svg" width="72" height="72" alt="Pam the bird: a yellow 8-bit bird with a ringed eye, an orange cone beak and a round cap" />
+  <img src="public/favicon.svg" width="72" height="72" alt="Pam the bird: a long yellow 8-bit bird with a cap, a ringed eye and an orange cone beak" />
 </p>
 
 <h1 align="center">Pammy Bird</h1>

@@ -1,21 +1,21 @@
 // Generates the home-screen icons (apple-touch 180, icon-192, icon-512) and the
 // 1200x630 social preview from the same 32x32 Pam grid the game draws
 // (src/art/agent-grid.js). The favicons (favicon.svg, favicon.ico,
-// favicon-16.png, favicon-32.png) are Iris's hand-drawn 16px set, committed in
+// favicon-16.png, favicon-32.png) are a hand-drawn 16px Pam matching A5a, committed in
 // public/ as delivered: this script does not write them, because a 32px sprite
 // downscaled to 16px loses Pam's features.
 // The social preview shows a frame captured from the running game, so start the
 // dev server (npm run dev) or the preview server first and pass its URL if it is
 // not the dev default.
 // Usage: node scripts/make-assets.mjs <outDir> [previewFileName] [gameUrl]
-// Example: npm run assets   (writes into public/, preview as social-preview-v2.png)
+// Example: npm run assets   (writes into public/, preview as social-preview-v3.png)
 import { chromium } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { agentGrid, PALETTE, SPRITE_PX } from '../src/art/agent-grid.js';
 
 const out = process.argv[2] ?? 'public';
-const previewName = process.argv[3] ?? 'social-preview-v2.png';
+const previewName = process.argv[3] ?? 'social-preview-v3.png';
 const gameUrl = process.argv[4] ?? 'http://127.0.0.1:5173/';
 mkdirSync(out, { recursive: true });
 
