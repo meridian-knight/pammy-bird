@@ -1,10 +1,8 @@
 /**
  * Pam the bird: 32x32 pixel grid for Pammy Bird. Drop-in replacement for src/art/agent-grid.js.
- * Same exports and signature as Iris's A4-32: SPRITE_PX, PALETTE, agentGrid({wing, face, gaze}).
- * A5a "reference-true" (JZ, 2 Nov 2026 ~16:07 ACDT: "A5a works"): longer block body, cap bowl hanging from the top line
- * behind the eye, eye high against the beak root, as on the mousepad Pam (REF-P1). Six colours unchanged (L02).
- * Precomputed by Pammy Bird/design/S5_a5a_build/pam_a5a_states.mjs from the C60 base pose (pam_a5.mjs) and Iris's
- * dir_a4.py face, gaze and wing rules.
+ * Same exports and signature as the earlier A4-32 grid: SPRITE_PX, PALETTE, agentGrid({wing, face, gaze}).
+ * A5a sprite: longer block body, cap bowl hanging from the top line behind the eye, eye high against the
+ * beak root. Six colours. States are precomputed outside this repository; edit the source art, not this file.
  * Right-facing profile. gaze 'centre' = pupil in the middle of the eye, 'right' = looking down the beak.
  * wing 0 = tail down / feet out, wing 1 = tail up / feet tucked. 'dizzy' ignores gaze.
  * NOTE: SPRITE_PX is 32 here. The 12x12 token backdrop has its own TOKEN_PX.

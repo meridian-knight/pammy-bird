@@ -9,7 +9,7 @@ A static browser game in the Flappy Bird style: Pam, a yellow 8-bit bird, flies 
 - Live: https://meridian-knight.github.io/pammy-bird/ (GitHub Pages, deployed from `main` by `.github/workflows/deploy-pages.yml`).
 - Repository: https://github.com/meridian-knight/pammy-bird (created for 2.0.0 on 2 Nov 2026). Cloned from claude-glide with its history, but the claude-glide tags (v1.x, deployed-v1.x) were not pushed; claude-glide itself is unchanged.
 - Stack: Vite 8, TypeScript 5.9, Vitest, Playwright. No runtime dependencies. Same pinned versions as Claude Swarm.
-- Sibling project: Claude Swarm at `~/Claude Swarm Game` (frozen, do not modify). The platform modules here were copied from it; see "Lineage".
+- Sibling project: Claude Swarm, https://github.com/meridian-knight/claude-swarm (frozen, do not modify). The platform modules here were copied from it; see "Lineage".
 
 ## Brand and copy rules (fixed)
 
@@ -19,7 +19,7 @@ A static browser game in the Flappy Bird style: Pam, a yellow 8-bit bird, flies 
 - Credits: uppercase **BUILT BY CYBER SQUAD ZERO + CLAUDE**, mixed case **Built by CyberSquad0 + Claude.** The footer is uppercase via CSS, so the uppercase form is written literally there; never place "CyberSquad0" inside an element with `text-transform: uppercase`.
 - Disclaimer (keep): "Not affiliated with or endorsed by Anthropic." plus "Unofficial fan game". README adds "Not affiliated with the makers of Flappy Bird."
 - Page title: "Pammy Bird | Retro Flappy-Style Arcade Game | CyberSquad0".
-- Pam: the A5a sprite (32×32, six colours, 40 states), picked by the owner on 2 Nov 2026 to sit closer to the mousepad Pam: a longer block body, the cap bowl hanging from the top line behind the eye, the eye high against the beak root. It keeps Iris's A4-32 palette, identity cues and face, gaze and wing rules (lock L02) and is drawn in the Image Generation library (Pammy Bird, entry C61); never recolour or redraw it here. The 16px favicon set is hand-drawn to match, not a downscale.
+- Pam: the A5a sprite (32×32, six colours, 40 states), picked by the owner on 2 Nov 2026: a longer block body, the cap bowl hanging from the top line behind the eye, the eye high against the beak root. It keeps the A4-32 palette, identity cues and face, gaze and wing rules. The source art is maintained outside this repository; never recolour or redraw it here. The 16px favicon set is hand-drawn to match, not a downscale.
 - World: 8-bit Melbourne at dusk, one world unit per art pixel (the same grain as Pam); no smooth gradients; nothing near Pam as bright as her yellow.
 - Social preview: `public/social-preview-v4.png`. Bump the version number on every artwork change and update all four references in `index.html` (og:image, og:image:secure_url, twitter:image, JSON-LD image) plus the release test and `verify-live.mjs`.
 - No licence file, by choice (as Claude Swarm).

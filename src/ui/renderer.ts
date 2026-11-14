@@ -17,8 +17,8 @@ const COLOURS = {
 };
 
 /**
- * Stacks are red-brick Victorian chimneys (JZ's pick from the Melbourne theme
- * board). Every block fills its whole 40 × 20 cell, so the drawn stack is
+ * Stacks are red-brick Victorian chimneys, from the Melbourne theme.
+ * Every block fills its whole 40 × 20 cell, so the drawn stack is
  * exactly the stack's collision box.
  */
 const BRICK = {
